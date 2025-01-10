@@ -120,12 +120,12 @@
             padding: 12px 20px;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, filter 0.3s;
         }
 
-        .bet-button.disabled {
-            background-color: #555555;
-            cursor: not-allowed;
+        .bet-button:hover {
+            background-color: #00ff88;
+            filter: brightness(80%);
         }
 
         /* Footer */
@@ -167,98 +167,57 @@
         }
     </style>
     <script>
-        let currentMoney = 1000; // Initial money for the player
-        let betPlaced = false;
+        // Function to get the 'money' cookie value
+        function getMoney() {
+            const cookieValue = document.cookie.split('; ').find(row => row.startsWith('money='));
+            return cookieValue ? parseInt(cookieValue.split('=')[1]) : 1000; // Default to 1000 if no cookie
+        }
 
-        // Function to format numbers with commas
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        // Function to set the 'money' cookie value
+        function setMoney(amount) {
+            document.cookie = `money=${amount}; path=/; max-age=31536000`; // Cookie expires in 1 year
         }
 
         // Update the money display in the top nav
         function updateMoneyDisplay() {
-            document.querySelector('.money-counter span').textContent = formatNumber(currentMoney);
+            const money = getMoney();
+            document.querySelector('.money-counter span').textContent = `cash.svg ${money}`;
         }
 
-        // Check if a bet is valid and place it
+        // Place bet function (immediate processing)
         function placeBet() {
             const betAmount = parseInt(document.querySelector('#betAmount').value);
+            const currentMoney = getMoney();
+
             if (isNaN(betAmount) || betAmount <= 0 || betAmount > currentMoney) {
-                alert('Invalid bet amount.');
-                return;
+                return; // Invalid bet, do nothing
             }
 
-            currentMoney -= betAmount;
-            updateMoneyDisplay();
+            setMoney(currentMoney - betAmount); // Deduct the bet amount from money
 
-            betPlaced = true;
-            document.querySelector('.bet-button').disabled = true;
-            document.querySelector('.bet-button').classList.add('disabled');
-
-            // Start the countdown
-            startCountdown();
-        }
-
-        // Countdown timer
-        function startCountdown() {
-            let countdown = 10;
-            const countdownDisplay = document.querySelector('.countdown');
-            countdownDisplay.textContent = `Betting in: ${countdown}`;
-            const countdownInterval = setInterval(() => {
-                countdown--;
-                countdownDisplay.textContent = `Betting in: ${countdown}`;
-                if (countdown === 0) {
-                    clearInterval(countdownInterval);
-                    determineWinner();
-                }
-            }, 1000);
-        }
-
-        // Function to determine the winner and update the money
-        function determineWinner() {
-            const winner = Math.random() < 0.5 ? 'player' : 'opponent';
-            const betAmount = parseInt(document.querySelector('#betAmount').value);
-
-            if (winner === 'player') {
-                currentMoney += betAmount * 2; // Player wins, doubles the bet
-                alert('You won!');
-            } else {
-                alert('You lost!');
+            // Randomly determine win or loss (50/50 chance)
+            const win = Math.random() < 0.5;
+            if (win) {
+                setMoney(getMoney() + betAmount * 2); // Double the bet amount if win
             }
 
             updateMoneyDisplay();
-            resetBet();
+            document.querySelector('#betAmount').value = ''; // Clear bet input
         }
 
-        // Reset the bet section after a round
-        function resetBet() {
-            setTimeout(() => {
-                betPlaced = false;
-                document.querySelector('.bet-button').disabled = false;
-                document.querySelector('.bet-button').classList.remove('disabled');
-                document.querySelector('#betAmount').value = '';
-                document.querySelector('.countdown').textContent = '';
-            }, 3000);
-        }
-
-        // Initialize the money and cookie on page load
+        // Initialize the page
         window.onload = () => {
             updateMoneyDisplay();
         };
-
-        // Handle logout
-        function logout() {
-            alert('Logged out');
-        }
     </script>
 </head>
 <body>
     <!-- Top Navigation -->
     <div class="top-nav">
         <div class="money-counter">
-            <img src="money-icon.png" alt="Money" /> Money: <span>1000</span>
+            <img src="cash.svg" alt="Money" /> <span>cash.svg 1000</span>
         </div>
-        <a href="#" class="login" onclick="logout()">Logout</a>
+        <a href="#" class="login">Logout</a>
     </div>
 
     <!-- Left Navigation -->
@@ -275,14 +234,13 @@
         <div class="game-container">
             <!-- Profiles -->
             <div class="profiles">
-                <div class="profile" id="profile1">
-                    <img src="pfp.png" alt="You" />
-                    <span>You</span>
+                <div class="profile">
+                    <img src="pfp.png" alt="Opponent" />
                 </div>
                 <div class="vs">
                     VS <span class="green">S</span>
                 </div>
-                <div class="profile" id="profile2">
+                <div class="profile">
                     <img src="pfp.png" alt="Opponent" />
                 </div>
             </div>
@@ -292,9 +250,6 @@
                 <input type="number" id="betAmount" class="bet-input" placeholder="Bet amount" />
                 <button class="bet-button" onclick="placeBet()">Bet</button>
             </div>
-
-            <!-- Countdown Display -->
-            <div class="countdown"></div>
         </div>
     </div>
 
