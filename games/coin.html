@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloxzee - Coin Toss</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f0f0f;
+            color: #ffffff;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: #161616;
+            padding: 15px 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .top-nav .money-counter {
+            color: #00ff88;
+            font-weight: 600;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-nav .money-counter img {
+            width: 25px;
+            height: 25px;
+        }
+
+        .top-nav .login {
+            color: #00ff88;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 2px solid #00ff88;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .top-nav .login:hover {
+            background-color: #00ff88;
+            color: #0f0f0f;
+        }
+
+        /* Left Navigation */
+        .left-nav {
+            width: 240px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: #161616;
+            padding-top: 20px;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .left-nav .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .left-nav .logo span {
+            color: #00ff88;
+        }
+
+        .left-nav a {
+            display: block;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 25px;
+            font-weight: 600;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .left-nav a:hover {
+            background-color: #00ff88;
+            color: #0f0f0f;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .coin {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 100px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 20px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .coin.selected {
+            border-color: #00ff88;
+        }
+
+        .bet-input {
+            padding: 10px;
+            font-size: 18px;
+            border: 2px solid #00ff88;
+            background-color: #333333;
+            color: #ffffff;
+            border-radius: 5px;
+            width: 200px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .bet-input img {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+        }
+
+        .bet-button {
+            background-color: #00ff88;
+            border: none;
+            color: #0f0f0f;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, filter 0.3s;
+            margin-top: 20px;
+        }
+
+        .bet-button:hover {
+            background-color: #00ff88;
+            filter: brightness(80%);
+        }
+
+        .result-message {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .or-text {
+            font-size: 18px;
+            color: #ffffff;
+            margin: 0 20px;
+            align-self: center;
+        }
+    </style>
+    <script>
+        // Function to get the 'money' cookie value
+        function getMoney() {
+            const cookieValue = document.cookie.split('; ').find(row => row.startsWith('money='));
+            return cookieValue ? parseInt(cookieValue.split('=')[1]) : null; // Return null if no cookie
+        }
+
+        // Function to set the 'money' cookie value
+        function setMoney(amount) {
+            document.cookie = `money=${amount}; path=/; max-age=31536000`; // Cookie expires in 1 year
+        }
+
+        // Function to format numbers with commas
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Update the money display in the top nav
+        function updateMoneyDisplay() {
+            const money = getMoney();
+            if (money !== null) {
+                document.querySelector('.money-counter span').textContent = `${formatNumber(money)}`;
+            } else {
+                window.location.href = "/"; // Redirect if no money cookie is found
+            }
+        }
+
+        // Function to handle coin selection
+        function selectCoin(coinElement) {
+            document.querySelectorAll('.coin').forEach(coin => coin.classList.remove('selected'));
+            coinElement.classList.add('selected');
+        }
+
+        // Function to place a bet
+        function placeBet() {
+            const selectedCoin = document.querySelector('.coin.selected');
+            const betAmount = parseInt(document.querySelector('#betAmount').value);
+            const currentMoney = getMoney();
+
+            if (!selectedCoin || isNaN(betAmount) || betAmount <= 0 || betAmount > currentMoney) {
+                document.querySelector('.result-message').textContent = "Please select a coin and enter a valid bet.";
+                return;
+            }
+
+            setMoney(currentMoney - betAmount); // Deduct bet amount
+            const result = Math.floor(Math.random() * 2) + 1; // Randomly generate 1 or 2
+
+            if ((result === 1 && selectedCoin.textContent === "H") || (result === 2 && selectedCoin.textContent === "T")) {
+                setMoney(getMoney() + betAmount * 2); // Win
+                document.querySelector('.result-message').textContent = "You won!";
+            } else {
+                document.querySelector('.result-message').textContent = "You lost!";
+            }
+
+            updateMoneyDisplay();
+            document.querySelector('#betAmount').value = ''; // Clear bet input
+        }
+
+        // Function to log out and destroy the money cookie
+        function logout() {
+            document.cookie = "money=; path=/; max-age=0"; // Destroy the 'money' cookie
+            window.location.href = "/"; // Redirect to home page after logout
+        }
+
+        // Initialize the page
+        window.onload = () => {
+            updateMoneyDisplay();
+        };
+    </script>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="money-counter">
+            <img src="cash.svg" alt="Money" /> <b><span>0</span></b>
+        </div>
+        <a href="#" class="login" onclick="logout()">Logout</a>
+    </div>
+
+    <!-- Left Navigation -->
+    <div class="left-nav">
+        <div class="logo">BLOX<span>ZEE</span></div>
+        <a href="/">Games</a>
+        <a href="/funds">Funds</a>
+        <a href="/promo">Promotions</a>
+        <a href="/about">About</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="game-container">
+            <div class="coin" onclick="selectCoin(this)">H</div>
+            <div class="or-text">OR</div>
+            <div class="coin" onclick="selectCoin(this)">T</div>
+            <div class="bet-section">
+                <div style="position: relative;">
+                    <input type="number" id="betAmount" class="bet-input" placeholder="Bet amount" />
+                    <img src="cash.svg" alt="Cash" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%);" />
+                </div>
+                <button class="bet-button" onclick="placeBet()">Bet</button>
+            </div>
+            <div class="result-message"></div>
+        </div>
+    </div>
+</body>
+</html>
