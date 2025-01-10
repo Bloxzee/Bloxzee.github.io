@@ -11,9 +11,6 @@
             font-family: 'Poppins', sans-serif;
             background-color: #0f0f0f;
             color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
         }
 
         /* Top Navigation */
@@ -98,15 +95,13 @@
         .main-content {
             margin-left: 260px;
             padding: 40px;
-            flex-grow: 1;
         }
 
-        /* PvP Game Mode */
         .game-container {
             text-align: center;
         }
 
-        /* Profile Pictures */
+        /* Profiles */
         .profiles {
             display: flex;
             justify-content: center;
@@ -134,10 +129,6 @@
             transition: filter 0.3s ease;
         }
 
-        .profile.dark img {
-            filter: brightness(50%);
-        }
-
         .profile span {
             position: absolute;
             color: #ffffff;
@@ -156,7 +147,6 @@
             color: #00ff88;
         }
 
-        /* Bet Section */
         .bet-section {
             margin-top: 30px;
             display: flex;
@@ -211,27 +201,34 @@
             font-size: 14px;
             letter-spacing: 0.5px;
         }
+
     </style>
     <script>
-        // Get the current money value from the cookie, if available
+        let currentMoney;
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Get money from cookie
         function getMoneyFromCookie() {
             const cookieValue = document.cookie.split('; ').find(row => row.startsWith('money='));
             return cookieValue ? parseInt(cookieValue.split('=')[1]) : 1000; // Default to 1000 if not set
         }
 
-        // Set the current money value in the cookie
+        // Set money in cookie
         function setMoneyInCookie(value) {
             document.cookie = `money=${value}; path=/; max-age=31536000`; // 1 year expiration
         }
 
-        let currentMoney = getMoneyFromCookie(); // Initialize current money from the cookie
         let winner = null;  // Tracks who the winner is (1 or 2)
         let betPlaced = false;  // To check if a bet has been placed
         let countdownTimer = null;
 
-        // Update the displayed money (linked to the cookie)
+        // Update the displayed money
         function updateMoneyDisplay() {
-            document.querySelector('.money-counter').textContent = `Money: ${currentMoney}`;
+            const formattedMoney = formatNumber(currentMoney);
+            document.querySelector('.money-counter span').textContent = formattedMoney;
         }
 
         // Handle the bet logic
@@ -294,7 +291,7 @@
             }, 1000);
         }
 
-        // Reset the betting process after the bet is completed
+        // Reset the bet section after a round
         function resetBet() {
             setTimeout(() => {
                 betPlaced = false;
@@ -305,8 +302,9 @@
             }, 3000);
         }
 
-        // Initialize the money display when the page loads
+        // Initialize the money and cookie on page load
         window.onload = () => {
+            currentMoney = getMoneyFromCookie();
             updateMoneyDisplay();
         };
     </script>
@@ -317,14 +315,12 @@
         <div class="money-counter">
             <img src="money-icon.png" alt="Money" /> Money: 1000
         </div>
-        <a href="#" class="login">Logout</a>
+        <a href="#" class="login" onclick="logout()">Logout</a>
     </div>
 
     <!-- Left Navigation -->
     <div class="left-nav">
-        <div class="logo">
-            Game <span>Zone</span>
-        </div>
+        <div class="logo">Game <span>Zone</span></div>
         <a href="#">Home</a>
         <a href="#">PvP Game Mode</a>
         <a href="#">Leaderboard</a>
@@ -336,14 +332,14 @@
         <div class="game-container">
             <!-- Profiles -->
             <div class="profiles">
-                <div class="profile dark">
+                <div class="profile" id="profile1">
                     <img src="pfp.png" alt="You" />
                     <span>You</span>
                 </div>
                 <div class="vs">
                     VS <span class="green">S</span>
                 </div>
-                <div class="profile">
+                <div class="profile" id="profile2">
                     <img src="pfp.png" alt="Opponent" />
                 </div>
             </div>
@@ -356,9 +352,6 @@
 
             <!-- Countdown Display -->
             <div class="countdown"></div>
-
-            <!-- Money Display -->
-            <div class="money-counter" style="margin-top: 20px;"></div>
         </div>
     </div>
 
@@ -366,5 +359,6 @@
     <div class="footer">
         © 2025 PvP Game Mode - All Rights Reserved.
     </div>
+
 </body>
 </html>
