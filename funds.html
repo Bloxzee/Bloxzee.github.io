@@ -227,7 +227,7 @@
 
             if (action === 'deposit') {
                 currentMoney += amount;
-                showSuccessMessage(`You successfully deposited ${formatNumber(amount)} R$ from your account!`);
+                showSuccessMessage(`You successfully deposited ${formatNumber(amount)} R$ into your account!`);
             } else if (action === 'withdraw') {
                 if (amount > currentMoney) {
                     alert("Insufficient funds.");
