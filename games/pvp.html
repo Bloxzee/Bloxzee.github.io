@@ -170,7 +170,7 @@
         // Function to get the 'money' cookie value
         function getMoney() {
             const cookieValue = document.cookie.split('; ').find(row => row.startsWith('money='));
-            return cookieValue ? parseInt(cookieValue.split('=')[1]) : 1000; // Default to 1000 if no cookie
+            return cookieValue ? parseInt(cookieValue.split('=')[1]) : null; // Return null if no cookie
         }
 
         // Function to set the 'money' cookie value
@@ -178,10 +178,19 @@
             document.cookie = `money=${amount}; path=/; max-age=31536000`; // Cookie expires in 1 year
         }
 
+        // Function to format numbers with commas
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
         // Update the money display in the top nav
         function updateMoneyDisplay() {
             const money = getMoney();
-            document.querySelector('.money-counter span').textContent = `cash.svg ${money}`;
+            if (money !== null) {
+                document.querySelector('.money-counter span').textContent = `cash.svg ${formatNumber(money)}`;
+            } else {
+                window.location.href = "/"; // Redirect if no money cookie is found
+            }
         }
 
         // Place bet function (immediate processing)
@@ -205,6 +214,12 @@
             document.querySelector('#betAmount').value = ''; // Clear bet input
         }
 
+        // Function to log out and destroy the money cookie
+        function logout() {
+            document.cookie = "money=; path=/; max-age=0"; // Destroy the 'money' cookie
+            window.location.href = "/"; // Redirect to home page after logout
+        }
+
         // Initialize the page
         window.onload = () => {
             updateMoneyDisplay();
@@ -215,9 +230,9 @@
     <!-- Top Navigation -->
     <div class="top-nav">
         <div class="money-counter">
-            <img src="cash.svg" alt="Money" /> <span>cash.svg 1000</span>
+            <img src="cash.svg" alt="Money" /> <span>cash.svg 1,000</span>
         </div>
-        <a href="#" class="login">Logout</a>
+        <a href="#" class="login" onclick="logout()">Logout</a>
     </div>
 
     <!-- Left Navigation -->
