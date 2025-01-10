@@ -184,17 +184,31 @@
             font-size: 18px;
             font-weight: 600;
         }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #161616;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            color: #ffffff;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.5);
+        }
     </style>
     <script>
         // Function to get the 'money' cookie value
         function getMoney() {
             const cookieValue = document.cookie.split('; ').find(row => row.startsWith('money='));
-            return cookieValue ? parseInt(cookieValue.split('=')[1]) : null; // Return null if no cookie
+            return cookieValue ? parseInt(cookieValue.split('=')[1]) : null;
         }
 
         // Function to set the 'money' cookie value
         function setMoney(amount) {
-            document.cookie = `money=${amount}; path=/; max-age=31536000`; // Cookie expires in 1 year
+            document.cookie = `money=${amount}; path=/; max-age=31536000`;
         }
 
         // Function to format numbers with commas
@@ -212,41 +226,45 @@
             }
         }
 
-        // Function to handle coin selection
-        function selectCoin(coinElement) {
-            document.querySelectorAll('.coin').forEach(coin => coin.classList.remove('selected'));
-            coinElement.classList.add('selected');
+        // Function to log out and destroy the money cookie
+        function logout() {
+            document.cookie = "money=; path=/; max-age=0";
+            window.location.href = "/";
         }
 
-        // Function to place a bet
+        // Coin selection
+        function selectCoin(coin) {
+            document.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+            coin.classList.add('selected');
+        }
+
+        // Place bet function
         function placeBet() {
-            const selectedCoin = document.querySelector('.coin.selected');
             const betAmount = parseInt(document.querySelector('#betAmount').value);
             const currentMoney = getMoney();
+            const selectedCoin = document.querySelector('.coin.selected');
 
             if (!selectedCoin || isNaN(betAmount) || betAmount <= 0 || betAmount > currentMoney) {
-                document.querySelector('.result-message').textContent = "Please select a coin and enter a valid bet.";
-                return;
+                return; // Invalid bet
             }
 
             setMoney(currentMoney - betAmount); // Deduct bet amount
-            const result = Math.floor(Math.random() * 2) + 1; // Randomly generate 1 or 2
 
-            if ((result === 1 && selectedCoin.textContent === "H") || (result === 2 && selectedCoin.textContent === "T")) {
-                setMoney(getMoney() + betAmount * 2); // Win
-                document.querySelector('.result-message').textContent = "You won!";
+            const win = Math.ceil(Math.random() * 2); // Randomly pick 1 or 2
+            const chosenSide = selectedCoin.textContent === "H" ? 1 : 2;
+
+            const resultMessage = document.querySelector('.result-message');
+            if (win === chosenSide) {
+                setMoney(getMoney() + betAmount * 2); // Double the bet if win
+                resultMessage.textContent = "You won!";
+                resultMessage.style.color = "#00ff88";
             } else {
-                document.querySelector('.result-message').textContent = "You lost!";
+                resultMessage.textContent = "You lost!";
+                resultMessage.style.color = "#ff0044";
             }
 
             updateMoneyDisplay();
             document.querySelector('#betAmount').value = ''; // Clear bet input
-        }
-
-        // Function to log out and destroy the money cookie
-        function logout() {
-            document.cookie = "money=; path=/; max-age=0"; // Destroy the 'money' cookie
-            window.location.href = "/"; // Redirect to home page after logout
         }
 
         // Initialize the page
@@ -288,6 +306,11 @@
             <button class="bet-button" onclick="placeBet()">Bet</button>
             <div class="result-message"></div>
         </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        &copy; 2025 BLOX<span>ZEE</span>. All Rights Reserved.
     </div>
 </body>
 </html>
