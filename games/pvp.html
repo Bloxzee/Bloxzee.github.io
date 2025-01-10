@@ -12,11 +12,96 @@
             background-color: #0f0f0f;
             color: #ffffff;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
+        /* Top Navigation */
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: #161616;
+            padding: 15px 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .top-nav .money-counter {
+            color: #00ff88;
+            font-weight: 600;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-nav .money-counter img {
+            width: 25px;
+            height: 25px;
+        }
+
+        .top-nav .login {
+            color: #00ff88;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 2px solid #00ff88;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .top-nav .login:hover {
+            background-color: #00ff88;
+            color: #0f0f0f;
+        }
+
+        /* Left Navigation */
+        .left-nav {
+            width: 240px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: #161616;
+            padding-top: 20px;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .left-nav .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .left-nav .logo span {
+            color: #00ff88;
+        }
+
+        .left-nav a {
+            display: block;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 25px;
+            font-weight: 600;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .left-nav a:hover {
+            background-color: #00ff88;
+            color: #0f0f0f;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 40px;
+            flex-grow: 1;
+        }
+
+        /* PvP Game Mode */
         .game-container {
             text-align: center;
         }
@@ -128,12 +213,23 @@
         }
     </style>
     <script>
-        let currentMoney = 1000;  // Example starting amount
+        // Get the current money value from the cookie, if available
+        function getMoneyFromCookie() {
+            const cookieValue = document.cookie.split('; ').find(row => row.startsWith('money='));
+            return cookieValue ? parseInt(cookieValue.split('=')[1]) : 1000; // Default to 1000 if not set
+        }
+
+        // Set the current money value in the cookie
+        function setMoneyInCookie(value) {
+            document.cookie = `money=${value}; path=/; max-age=31536000`; // 1 year expiration
+        }
+
+        let currentMoney = getMoneyFromCookie(); // Initialize current money from the cookie
         let winner = null;  // Tracks who the winner is (1 or 2)
         let betPlaced = false;  // To check if a bet has been placed
         let countdownTimer = null;
 
-        // Update the displayed money (you could link this to a cookie or sessionStorage)
+        // Update the displayed money (linked to the cookie)
         function updateMoneyDisplay() {
             document.querySelector('.money-counter').textContent = `Money: ${currentMoney}`;
         }
@@ -168,11 +264,13 @@
             if (outcome === 1) {
                 // You lose
                 currentMoney -= betAmount;
+                setMoneyInCookie(currentMoney); // Update the cookie value
                 document.querySelector('.profile:nth-child(2)').classList.add('winner');
                 alert("You lost the bet!");
             } else {
                 // You win
                 currentMoney += betAmount;
+                setMoneyInCookie(currentMoney); // Update the cookie value
                 document.querySelector('.profile:nth-child(1)').classList.add('winner');
                 alert("You won the bet!");
             }
@@ -202,43 +300,66 @@
                 betPlaced = false;
                 document.querySelector('.bet-button').disabled = false;
                 document.querySelector('.bet-button').classList.remove('disabled');
-                document.querySelector('.countdown').textContent = "";
+                document.querySelector('#betAmount').value = '';
+                document.querySelector('.countdown').textContent = '';
             }, 3000);
         }
 
-        // Initial setup when the page is loaded
-        document.addEventListener('DOMContentLoaded', () => {
+        // Initialize the money display when the page loads
+        window.onload = () => {
             updateMoneyDisplay();
-        });
+        };
     </script>
 </head>
 <body>
-    <div class="game-container">
-        <!-- Profiles -->
-        <div class="profiles">
-            <div class="profile dark">
-                <img src="pfp.png" alt="You" />
-                <span>You</span>
-            </div>
-            <div class="vs">
-                VS <span class="green">S</span>
-            </div>
-            <div class="profile">
-                <img src="pfp.png" alt="Opponent" />
-            </div>
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="money-counter">
+            <img src="money-icon.png" alt="Money" /> Money: 1000
         </div>
+        <a href="#" class="login">Logout</a>
+    </div>
 
-        <!-- Bet Section -->
-        <div class="bet-section">
-            <input type="number" id="betAmount" class="bet-input" placeholder="Bet amount" />
-            <button class="bet-button" onclick="placeBet()">Bet</button>
+    <!-- Left Navigation -->
+    <div class="left-nav">
+        <div class="logo">
+            Game <span>Zone</span>
         </div>
+        <a href="#">Home</a>
+        <a href="#">PvP Game Mode</a>
+        <a href="#">Leaderboard</a>
+        <a href="#">Settings</a>
+    </div>
 
-        <!-- Countdown Display -->
-        <div class="countdown"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="game-container">
+            <!-- Profiles -->
+            <div class="profiles">
+                <div class="profile dark">
+                    <img src="pfp.png" alt="You" />
+                    <span>You</span>
+                </div>
+                <div class="vs">
+                    VS <span class="green">S</span>
+                </div>
+                <div class="profile">
+                    <img src="pfp.png" alt="Opponent" />
+                </div>
+            </div>
 
-        <!-- Money Display -->
-        <div class="money-counter" style="margin-top: 20px;"></div>
+            <!-- Bet Section -->
+            <div class="bet-section">
+                <input type="number" id="betAmount" class="bet-input" placeholder="Bet amount" />
+                <button class="bet-button" onclick="placeBet()">Bet</button>
+            </div>
+
+            <!-- Countdown Display -->
+            <div class="countdown"></div>
+
+            <!-- Money Display -->
+            <div class="money-counter" style="margin-top: 20px;"></div>
+        </div>
     </div>
 
     <!-- Footer -->
