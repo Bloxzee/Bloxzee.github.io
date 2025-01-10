@@ -115,7 +115,7 @@
         }
 
         .promo-form input {
-            width: 86%;
+            width: 92%;
             padding: 12px;
             margin-bottom: 20px;
             background-color: #333333;
@@ -129,7 +129,7 @@
         .promo-form button {
             width: 100%;
             padding: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 1px;
             background-color: #00ff88;
             border: none;
             color: #0f0f0f;
@@ -144,7 +144,7 @@
         }
 
         .promo-form button:first-child {
-            margin-bottom: 20px;
+            margin-bottom: 1px;
         }
 
         .promo-message {
@@ -169,6 +169,11 @@
     </style>
     <script>
         let currentMoney;
+        const promoCodes = [
+            { code: "FREE2K", reward: 2000 },
+            { code: "2025", reward: 250 },
+            { code: "LAUNCH", reward: 100 }
+        ];
 
         // Simulate checking the cookie for money
         function formatNumber(num) {
@@ -213,46 +218,34 @@
             const promoMessageElement = document.querySelector('.promo-message');
             const promoCode = promoCodeInput.value.trim().toUpperCase();
 
-            // Check if the code has already been claimed in this session
+            // Check if the code has already been claimed during this page visit
             const claimedCodes = getClaimedCodes();
             if (claimedCodes.includes(promoCode)) {
                 promoMessageElement.textContent = "You've already claimed this promo code.";
                 return;
             }
 
-            // Promo codes and their rewards
-            let reward = 0;
-            if (promoCode === "FREE2K") {
-                reward = 2000;
-            } else if (promoCode === "2025") {
-                reward = 250;
-            } else if (promoCode === "LAUNCH") {
-                reward = 100;
-            }
-
-            if (reward > 0) {
-                currentMoney += reward;
+            // Find the promo code from the list
+            const promo = promoCodes.find(p => p.code === promoCode);
+            if (promo) {
+                currentMoney += promo.reward;
                 updateMoney();
                 setClaimedCode(promoCode);
-                promoMessageElement.textContent = `You successfully redeemed ${reward}R$ for code: ${promoCode}!`;
+                promoMessageElement.textContent = `You successfully redeemed ${promo.reward}R$ for code: ${promoCode}!`;
             } else {
                 promoMessageElement.textContent = "Invalid promo code.";
             }
         }
 
         function getClaimedCodes() {
-            const claimedCodes = document.cookie
-                .split('; ')
-                .find(row => row.startsWith('claimedCodes='))
-                ?.split('=')[1];
-
+            const claimedCodes = sessionStorage.getItem('claimedCodes');
             return claimedCodes ? JSON.parse(claimedCodes) : [];
         }
 
         function setClaimedCode(code) {
             const claimedCodes = getClaimedCodes();
             claimedCodes.push(code);
-            document.cookie = `claimedCodes=${JSON.stringify(claimedCodes)}; path=/;`;
+            sessionStorage.setItem('claimedCodes', JSON.stringify(claimedCodes));
         }
 
         document.addEventListener('DOMContentLoaded', checkCookie);
