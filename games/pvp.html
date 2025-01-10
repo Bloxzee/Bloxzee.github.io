@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PvP Game Mode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f0f0f;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .game-container {
+            text-align: center;
+        }
+
+        /* Profile Pictures */
+        .profiles {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .profile {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 20px;
+            border-radius: 50%;
+            background-color: #333333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .profile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: filter 0.3s ease;
+        }
+
+        .profile.dark img {
+            filter: brightness(50%);
+        }
+
+        .profile span {
+            position: absolute;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .vs {
+            font-size: 30px;
+            color: #ffffff;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+
+        .vs .green {
+            color: #00ff88;
+        }
+
+        /* Bet Section */
+        .bet-section {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bet-input {
+            width: 120px;
+            padding: 10px;
+            background-color: #333333;
+            border: 2px solid #00ff88;
+            color: #ffffff;
+            font-size: 16px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .bet-button {
+            padding: 10px 20px;
+            background-color: #00ff88;
+            color: #0f0f0f;
+            border: none;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-left: 10px;
+        }
+
+        .bet-button:disabled {
+            background-color: #666666;
+            cursor: not-allowed;
+        }
+
+        .countdown {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #161616;
+            color: #ffffff;
+            text-align: center;
+            padding: 15px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+    </style>
+    <script>
+        let currentMoney = 1000;  // Example starting amount
+        let winner = null;  // Tracks who the winner is (1 or 2)
+        let betPlaced = false;  // To check if a bet has been placed
+        let countdownTimer = null;
+
+        // Update the displayed money (you could link this to a cookie or sessionStorage)
+        function updateMoneyDisplay() {
+            document.querySelector('.money-counter').textContent = `Money: ${currentMoney}`;
+        }
+
+        // Handle the bet logic
+        function placeBet() {
+            if (betPlaced) return; // Prevent placing another bet while one is in progress
+
+            const betAmount = parseInt(document.querySelector('#betAmount').value);
+            if (isNaN(betAmount) || betAmount <= 0 || betAmount > currentMoney) {
+                alert("Please enter a valid bet amount.");
+                return;
+            }
+
+            betPlaced = true;
+            document.querySelector('.bet-button').disabled = true;
+            document.querySelector('.bet-button').classList.add('disabled');
+            startCountdown();
+
+            // Generate a random outcome (1 or 2)
+            const outcome = Math.floor(Math.random() * 2) + 1;
+
+            setTimeout(() => {
+                handleOutcome(outcome, betAmount);
+            }, 3000);  // Wait for the countdown to complete before determining the outcome
+        }
+
+        // Handle the outcome based on the random result
+        function handleOutcome(outcome, betAmount) {
+            // Reset winner PFP
+            document.querySelector('.profile.winner')?.classList.remove('winner');
+            if (outcome === 1) {
+                // You lose
+                currentMoney -= betAmount;
+                document.querySelector('.profile:nth-child(2)').classList.add('winner');
+                alert("You lost the bet!");
+            } else {
+                // You win
+                currentMoney += betAmount;
+                document.querySelector('.profile:nth-child(1)').classList.add('winner');
+                alert("You won the bet!");
+            }
+
+            winner = outcome;
+            updateMoneyDisplay();
+            resetBet();
+        }
+
+        // Start the countdown for the bet
+        function startCountdown() {
+            let countdownValue = 3;
+            const countdownDisplay = document.querySelector('.countdown');
+            countdownDisplay.textContent = `Betting in: ${countdownValue}`;
+            countdownTimer = setInterval(() => {
+                countdownValue--;
+                countdownDisplay.textContent = `Betting in: ${countdownValue}`;
+                if (countdownValue === 0) {
+                    clearInterval(countdownTimer);
+                }
+            }, 1000);
+        }
+
+        // Reset the betting process after the bet is completed
+        function resetBet() {
+            setTimeout(() => {
+                betPlaced = false;
+                document.querySelector('.bet-button').disabled = false;
+                document.querySelector('.bet-button').classList.remove('disabled');
+                document.querySelector('.countdown').textContent = "";
+            }, 3000);
+        }
+
+        // Initial setup when the page is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            updateMoneyDisplay();
+        });
+    </script>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Profiles -->
+        <div class="profiles">
+            <div class="profile dark">
+                <img src="pfp.png" alt="You" />
+                <span>You</span>
+            </div>
+            <div class="vs">
+                VS <span class="green">S</span>
+            </div>
+            <div class="profile">
+                <img src="pfp.png" alt="Opponent" />
+            </div>
+        </div>
+
+        <!-- Bet Section -->
+        <div class="bet-section">
+            <input type="number" id="betAmount" class="bet-input" placeholder="Bet amount" />
+            <button class="bet-button" onclick="placeBet()">Bet</button>
+        </div>
+
+        <!-- Countdown Display -->
+        <div class="countdown"></div>
+
+        <!-- Money Display -->
+        <div class="money-counter" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        © 2025 PvP Game Mode - All Rights Reserved.
+    </div>
+</body>
+</html>
