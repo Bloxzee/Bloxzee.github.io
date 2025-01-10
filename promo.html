@@ -175,6 +175,9 @@
             { code: "LAUNCH", reward: 100 }
         ];
 
+        // Temporary variable for tracking redeemed codes in this page session
+        let redeemedCodes = [];
+
         // Simulate checking the cookie for money
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -218,9 +221,8 @@
             const promoMessageElement = document.querySelector('.promo-message');
             const promoCode = promoCodeInput.value.trim().toUpperCase();
 
-            // Check if the code has already been claimed during this page visit
-            const claimedCodes = getClaimedCodes();
-            if (claimedCodes.includes(promoCode)) {
+            // Check if the code has already been redeemed in this session
+            if (redeemedCodes.includes(promoCode)) {
                 promoMessageElement.textContent = "You've already claimed this promo code.";
                 return;
             }
@@ -230,22 +232,11 @@
             if (promo) {
                 currentMoney += promo.reward;
                 updateMoney();
-                setClaimedCode(promoCode);
+                redeemedCodes.push(promoCode);  // Mark the promo code as redeemed for this session
                 promoMessageElement.textContent = `You successfully redeemed ${promo.reward}R$ for code: ${promoCode}!`;
             } else {
                 promoMessageElement.textContent = "Invalid promo code.";
             }
-        }
-
-        function getClaimedCodes() {
-            const claimedCodes = sessionStorage.getItem('claimedCodes');
-            return claimedCodes ? JSON.parse(claimedCodes) : [];
-        }
-
-        function setClaimedCode(code) {
-            const claimedCodes = getClaimedCodes();
-            claimedCodes.push(code);
-            sessionStorage.setItem('claimedCodes', JSON.stringify(claimedCodes));
         }
 
         document.addEventListener('DOMContentLoaded', checkCookie);
