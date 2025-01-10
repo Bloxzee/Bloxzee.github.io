@@ -6,7 +6,12 @@
     <title>PvP Game Mode</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Add your existing styles here */
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f0f0f;
+            color: #ffffff;
+        }
 
         /* Top Navigation */
         .top-nav {
@@ -96,6 +101,33 @@
             text-align: center;
         }
 
+        .bet-input {
+            padding: 10px;
+            font-size: 18px;
+            border: 2px solid #00ff88;
+            background-color: #333333;
+            color: #ffffff;
+            border-radius: 5px;
+            width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .bet-button {
+            background-color: #00ff88;
+            border: none;
+            color: #0f0f0f;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .bet-button.disabled {
+            background-color: #555555;
+            cursor: not-allowed;
+        }
+
         /* Footer */
         .footer {
             background-color: #161616;
@@ -109,6 +141,30 @@
             letter-spacing: 0.5px;
         }
 
+        .profiles {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .profile img {
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+        }
+
+        .vs {
+            font-size: 24px;
+            color: #00ff88;
+            align-self: center;
+        }
+
+        .countdown {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
     </style>
     <script>
         let currentMoney = 1000; // Initial money for the player
@@ -189,6 +245,11 @@
         window.onload = () => {
             updateMoneyDisplay();
         };
+
+        // Handle logout
+        function logout() {
+            alert('Logged out');
+        }
     </script>
 </head>
 <body>
