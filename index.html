@@ -136,9 +136,9 @@
         }
 
         .counter {
-            margin-top: 40px;
+            margin-top: 1px;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             gap: 20px;
             flex-wrap: wrap;
         }
@@ -154,13 +154,23 @@
             max-width: 400px;
         }
 
-        .counter-card h2 {
-            font-size: 2.5em;
-            color: #00ff88;
+        .counter .amount {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
         }
 
-        .counter-card p {
-            font-size: 1.2em;
+        .counter .amount img {
+            vertical-align: middle;
+            margin-right: 10px;
+            width: 25px;
+            height: 25px;
+        }
+
+        .counter .paid-out {
+            font-size: 16px;
+            font-weight: 300;
+            color: #cccccc;
         }
 
         /* Footer */
@@ -175,39 +185,150 @@
             font-size: 14px;
             letter-spacing: 0.5px;
         }
+
+        /* Login Modal */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-modal-content {
+            background-color: #161616;
+            padding: 40px;
+            border-radius: 10px;
+            width: 350px;
+            text-align: center;
+            position: relative;
+        }
+
+        .login-modal-content h2 {
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .login-modal-content input {
+            width: 92%;
+            padding: 12px;
+            margin-bottom: 20px;
+            background-color: #333333;
+            border: 2px solid #00ff88;
+            color: #ffffff;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .login-modal-content button {
+            width: 100%;
+            padding: 12px;
+            background-color: #00ff88;
+            border: none;
+            color: #0f0f0f;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-modal-content button:hover {
+            background-color: #00cc66;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: -2px;
+            right: 13px;
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
     </style>
     <script>
-        // Helper function to format numbers
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        // Update counter values based on time
-        function updateCounters() {
-            const startUnix = 1736581477; // Example start time
-            const nowUnix = Math.floor(Date.now() / 1000); // Current time in seconds
+        function checkCookie() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('money='))
+                ?.split('=')[1];
 
-            // Calculate counters
-            const totalAccounts = (nowUnix - startUnix) * 1737;
-            const gamesPlayed = (nowUnix - startUnix) * 4622;
-            const buxSpent = (nowUnix - startUnix) * 53;
-
-            // Update counter elements
-            document.getElementById('total-accounts').textContent = formatNumber(totalAccounts);
-            document.getElementById('games-played').textContent = formatNumber(gamesPlayed);
-            document.getElementById('bux-spent').textContent = `฿${formatNumber(buxSpent)}`;
+            const topNav = document.querySelector('.top-nav');
+            if (cookieValue) {
+                const formattedMoney = formatNumber(cookieValue);
+                topNav.innerHTML = `
+                    <div class="money-counter">
+                        <img src="cash.svg" alt="Cash">
+                        <span><b>${formattedMoney}</b></span>
+                    </div>
+                    <a href="#" class="login" onclick="logout()">Logout</a>
+                `;
+            } else {
+                topNav.innerHTML = `
+                    <a href="#" class="login" onclick="openLoginModal()">Login</a>
+                `;
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', updateCounters);
+        function openLoginModal() {
+            document.querySelector('.login-modal').style.display = 'flex';
+        }
+
+        function closeLoginModal() {
+            document.querySelector('.login-modal').style.display = 'none';
+        }
+
+        function login() {
+            document.cookie = "money=0; path=/;";
+            location.reload();
+        }
+
+        function logout() {
+            document.cookie = "money=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            location.reload();
+        }
+    
+        // Function to format numbers with commams
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // Function to update counters dynamically
+    function updateCounters() {
+        const startUnix = 1736581477; // Given Unix timestamp from the original script
+        const nowUnix = Math.floor(Date.now() / 1000); // Current Unix timestamp
+
+        // Calculate differences
+        const totalAccounts = (nowUnix - startUnix) * 1894;
+        const gamesPlayed = (nowUnix - startUnix) * 3047;
+        const buxSpent = (nowUnix - startUnix) * 58;
+
+        // Update counters with formatted numbers
+        document.getElementById('total-accounts').textContent = formatNumber(totalAccounts);
+        document.getElementById('games-played').textContent = formatNumber(gamesPlayed);
+        document.getElementById('bux-spent').textContent = `฿${formatNumber(buxSpent)}`;
+    }
+
+    // Call the function to update counters on page load
+    document.addEventListener('DOMContentLoaded', updateCounters);
+</script>
+
+
+        document.addEventListener('DOMContentLoaded', checkCookie);
     </script>
 </head>
 <body>
     <!-- Top Navigation -->
     <div class="top-nav">
-        <div class="money-counter">
-            <img src="cash.svg" alt="Cash">
-            <span><b>฿0</b></span>
-        </div>
+        <a href="#" class="login" onclick="openLoginModal()">Login</a>
     </div>
 
     <!-- Left Navigation -->
@@ -224,25 +345,42 @@
         <h1>Popular Games</h1>
         <div class="game-cards">
             <div class="game-card"><a href="/games/flip">Flip</a></div>
+            <div class="game-card"><a href="/games/pvp">PVP</a></div>
+            <div class="game-card"><a href="/games/coin">Coin Toss</a></div>
+            <div class="game-card"><a href="/games/number">Pick the Number</a></div>
         </div>
 
+        <h1>Statistics</h1>
         <div class="counter">
             <div class="counter-card">
-                <h2 id="total-accounts">0</h2>
-                <p>Total Accounts</p>
+                <div class="amount1"><img src="cash.svg" alt="Cash">27,205,048</div>
+                <div class="paid-out">GLOBAL PAYOUTS</div>
             </div>
             <div class="counter-card">
-                <h2 id="games-played">0</h2>
-                <p>Games Played</p>
+                <div class="amount2"><img src="cash.svg" alt="Cash">117,405,375</div>
+                <div class="paid-out">GLOBAL WAGERED</div>
             </div>
             <div class="counter-card">
-                <h2 id="bux-spent">0</h2>
-                <p>Bux Spent</p>
+                <div class="amount3"><img src="cash.svg" alt="Cash">25,000,000+</div>
+                <div class="paid-out">GLOBAL FREE RAINS</div>
             </div>
         </div>
     </div>
 
+    <!-- Login Modal -->
+    <div class="login-modal">
+        <div class="login-modal-content">
+            <span class="close-modal" onclick="closeLoginModal()">x</span>
+            <h2>Login</h2>
+            <input type="password" id="keyInput" placeholder="Enter Key">
+            <button onclick="login()">Login</button>
+        </div>
+    </div>
+
     <!-- Footer -->
-    <div class="footer">&copy; 2024 Bloxzee. All Rights Reserved.</div>
+    <div class="footer">
+        © 2025 Bloxzee. All Rights Reserved.
+    </div>
+
 </body>
 </html>
