@@ -264,17 +264,17 @@
             const topNav = document.querySelector('.top-nav');
             if (cookieValue) {
                 const formattedMoney = formatNumber(cookieValue);
-                topNav.innerHTML = `
+                topNav.innerHTML = 
                     <div class="money-counter">
                         <img src="cash.svg" alt="Cash">
                         <span><b>${formattedMoney}</b></span>
                     </div>
                     <a href="#" class="login" onclick="logout()">Logout</a>
-                `;
+                ;
             } else {
-                topNav.innerHTML = `
+                topNav.innerHTML = 
                     <a href="#" class="login" onclick="openLoginModal()">Login</a>
-                `;
+                ;
             }
         }
 
@@ -295,26 +295,26 @@
             document.cookie = "money=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             location.reload();
         }
-    
-        // Function to format numbers with commams
-        function formatNumber(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        
+    // Function to format numbers with commas
+    function formatNumber(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
     // Function to update counters dynamically
     function updateCounters() {
-        const startUnix = 1736581477; // Given Unix timestamp from the original script
+        const startUnix = 1736581586; // Given Unix timestamp from the original script
         const nowUnix = Math.floor(Date.now() / 1000); // Current Unix timestamp
 
         // Calculate differences
-        const totalAccounts = (nowUnix - startUnix) * 1894;
-        const gamesPlayed = (nowUnix - startUnix) * 3047;
-        const buxSpent = (nowUnix - startUnix) * 58;
+        const payouts = (nowUnix - startUnix) * 2064;
+        const wagered = (nowUnix - startUnix) * 4283;
+        const rained = (nowUnix - startUnix) * 57;
 
         // Update counters with formatted numbers
-        document.getElementById('total-accounts').textContent = formatNumber(totalAccounts);
-        document.getElementById('games-played').textContent = formatNumber(gamesPlayed);
-        document.getElementById('bux-spent').textContent = `฿${formatNumber(buxSpent)}`;
+        document.getElementById('counter1').textContent = formatNumber(totalAccounts);
+        document.getElementById('counter2').textContent = formatNumber(gamesPlayed);
+        document.getElementById('counter3').textContent = formatNumber(buxSpent)};
     }
 
     // Call the function to update counters on page load
@@ -353,15 +353,15 @@
         <h1>Statistics</h1>
         <div class="counter">
             <div class="counter-card">
-                <div class="amount1"><img src="cash.svg" alt="Cash">27,205,048</div>
+                <div class="amount" id="counter1"><img src="cash.svg" alt="Cash">-</div>
                 <div class="paid-out">GLOBAL PAYOUTS</div>
             </div>
             <div class="counter-card">
-                <div class="amount2"><img src="cash.svg" alt="Cash">117,405,375</div>
+                <div class="amount" id="counter2"><img src="cash.svg" alt="Cash">-</div>
                 <div class="paid-out">GLOBAL WAGERED</div>
             </div>
             <div class="counter-card">
-                <div class="amount3"><img src="cash.svg" alt="Cash">25,000,000+</div>
+                <div class="amount" id="counter3"><img src="cash.svg" alt="Cash">-</div>
                 <div class="paid-out">GLOBAL FREE RAINS</div>
             </div>
         </div>
