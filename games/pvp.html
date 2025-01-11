@@ -102,16 +102,37 @@
             text-align: center;
         }
 
-        .bet-input {
-            padding: 10px;
-            font-size: 18px;
-            border: 2px solid #00ff88;
-            background-color: #333333;
-            color: #ffffff;
-            border-radius: 5px;
-            width: 200px;
-            margin-bottom: 20px;
-        }
+.bet-section {
+    position: relative; /* Ensures positioning works for the icon */
+    display: inline-block;
+}
+
+.bet-input {
+    padding: 10px 10px 10px 40px; /* Add space for the icon on the left */
+    font-size: 18px;
+    border: 2px solid #00ff88;
+    background-color: #333333;
+    color: #ffffff;
+    border-radius: 5px;
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+.bet-input-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.bet-input-wrapper img {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    pointer-events: none; /* Prevents icon from interfering with input interaction */
+}
+
 
         .bet-button {
             background-color: #00ff88;
@@ -262,12 +283,14 @@
             </div>
 
             <!-- Bet Section -->
-            <div class="bet-section">
-                <input type="number" id="betAmount" class="bet-input" placeholder="Bet amount" />
-                <button class="bet-button" onclick="placeBet()">Bet</button>
-            </div>
-        </div>
+<div class="bet-section">
+    <div class="bet-input-wrapper">
+        <img src="cash.svg" alt="Cash Icon">
+        <input type="number" id="betAmount" class="bet-input" placeholder="Bet amount" />
     </div>
+    <button class="bet-button" onclick="placeBet()">Bet</button>
+</div>
+
 
     <!-- Footer -->
     <div class="footer">
