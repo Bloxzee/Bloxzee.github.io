@@ -295,34 +295,9 @@
             document.cookie = "money=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             location.reload();
         }
-        
-    // Function to format numbers with commas
-    function formatNumber(number) {
-        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-
-    // Function to update counters dynamically
-    function updateCounters() {
-        const startUnix = 1736581586; // Given Unix timestamp from the original script
-        const nowUnix = Math.floor(Date.now() / 1000); // Current Unix timestamp
-
-        // Calculate differences
-        const payouts = (nowUnix - startUnix) * 2064;
-        const wagered = (nowUnix - startUnix) * 4283;
-        const rained = (nowUnix - startUnix) * 57;
-
-        // Update counters with formatted numbers
-        document.getElementById('counter1').textContent = formatNumber(totalAccounts);
-        document.getElementById('counter2').textContent = formatNumber(gamesPlayed);
-        document.getElementById('counter3').textContent = formatNumber(buxSpent)};
-    }
-
-    // Call the function to update counters on page load
-    document.addEventListener('DOMContentLoaded', updateCounters);
 
         document.addEventListener('DOMContentLoaded', checkCookie);
-</script>
-    
+    </script>
 </head>
 <body>
     <!-- Top Navigation -->
@@ -352,15 +327,15 @@
         <h1>Statistics</h1>
         <div class="counter">
             <div class="counter-card">
-                <div class="amount" id="counter1"><img src="cash.svg" alt="Cash">-</div>
+                <div class="amount"><img src="cash.svg" alt="Cash">27M+</div>
                 <div class="paid-out">GLOBAL PAYOUTS</div>
             </div>
             <div class="counter-card">
-                <div class="amount" id="counter2"><img src="cash.svg" alt="Cash">-</div>
+                <div class="amount"><img src="cash.svg" alt="Cash">54M+</div>
                 <div class="paid-out">GLOBAL WAGERED</div>
             </div>
             <div class="counter-card">
-                <div class="amount" id="counter3"><img src="cash.svg" alt="Cash">-</div>
+                <div class="amount"><img src="cash.svg" alt="Cash">2.4M+</div>
                 <div class="paid-out">GLOBAL FREE RAINS</div>
             </div>
         </div>
