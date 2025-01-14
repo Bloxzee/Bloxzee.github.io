@@ -118,83 +118,80 @@
             letter-spacing: 0.5px;
         }
 
+        /* Rain Box */
+        .rain-box {
+            text-align: center;
+            margin: 40px auto;
+            max-width: 300px;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+        }
+
+        .rain-box img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .rain-box button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #00ff88;
+            color: #0f0f0f;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .rain-box button:disabled {
+            background-color: #333333;
+            cursor: not-allowed;
+        }
+
+        .rain-box .success-message {
+            color: #00ff88;
+            font-size: 14px;
+            margin-top: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .rain-box .text-grey {
+            color: #aaaaaa;
+            font-size: 14px;
+            margin-top: 10px;
+        }
     </style>
     <script>
-        let currentMoney;
+        let minRain = 35000;
+        let maxRain = 65000;
+        let rainAmount = Math.floor(Math.random() * (maxRain - minRain + 1)) + minRain;
 
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        function claimRain() {
+            const claimButton = document.getElementById('claim-button');
+            const successMessage = document.getElementById('success-message');
+            const rainIncrement = Math.floor(rainAmount * 0.001); // 0.1% of rain amount
+            
+            // Get the current money from the cookie
+            const currentMoney = parseInt(document.cookie.split('; ').find(row => row.startsWith('money=')).split('=')[1]) || 0;
+            const newMoney = currentMoney + rainIncrement;
+            document.cookie = `money=${newMoney}; path=/;`;
+
+            // Show success message and disable button
+            successMessage.textContent = `Successfully claimed 'cash.svg' ${rainAmount.toLocaleString()}`;
+            successMessage.style.display = 'block';
+            claimButton.disabled = true;
+            claimButton.style.backgroundColor = '#333333';
+            claimButton.style.cursor = 'not-allowed';
         }
 
-        function checkCookie() {
-            const cookieValue = document.cookie
-                .split('; ')
-                .find(row => row.startsWith('money='))
-                ?.split('=')[1];
-
-            if (!cookieValue) {
-                window.location.href = '/';
-                return;
-            }
-
-            currentMoney = parseInt(cookieValue);
-            const formattedMoney = formatNumber(currentMoney);
-            const topNav = document.querySelector('.top-nav');
-            topNav.innerHTML = `
-                <div class="money-counter">
-                    <img src="cash.svg" alt="Cash">
-                    <span><b>${formattedMoney}</b></span>
-                </div>
-                <a href="#" class="login" onclick="logout()">Logout</a>
-            `;
-        }
-
-        function logout() {
-            document.cookie = "money=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            location.reload();
-        }
-
-        function updateMoney() {
-            document.cookie = `money=${currentMoney}; path=/;`;
-            checkCookie();
-        }
-
-        function handleFunds(action) {
-            const amountInput = document.querySelector('#amount');
-            let amount = parseFloat(amountInput.value);
-
-            if (isNaN(amount) || amount <= 0) {
-                alert("Please enter a valid amount.");
-                return;
-            }
-
-            if (action === 'deposit') {
-                currentMoney += amount;
-                showSuccessMessage(`You successfully deposited ${formatNumber(amount)} R$ into your account!`);
-            } else if (action === 'withdraw') {
-                if (amount > currentMoney) {
-                    alert("Insufficient funds.");
-                    return;
-                }
-                currentMoney -= amount;
-                showSuccessMessage(`You successfully withdrew ${formatNumber(amount)} R$ from your account!`);
-            }
-
-            updateMoney();
-        }
-
-        function showSuccessMessage(message) {
-            const successMessageElement = document.createElement('div');
-            successMessageElement.classList.add('success-message');
-            successMessageElement.textContent = message;
-            document.querySelector('.funds-form').appendChild(successMessageElement);
-
-            setTimeout(() => {
-                successMessageElement.remove();
-            }, 3000);
-        }
-
-        document.addEventListener('DOMContentLoaded', checkCookie);
+        // Set the initial rain amount
+        document.addEventListener('DOMContentLoaded', () => {
+            const rainAmountElement = document.getElementById('rain-amount');
+            rainAmountElement.textContent = rainAmount.toLocaleString();
+        });
     </script>
 </head>
 <body>
@@ -213,7 +210,18 @@
     </div>
 
     <!-- Main Content -->
-
+    <div class="main-content">
+        <h1>Rain</h1>
+        <div class="rain-box">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <img src="cash.svg" alt="Cash">
+                <span id="rain-amount" style="color: #00ff88; font-size: 24px; font-weight: bold;">-</span>
+            </div>
+            <div class="text-grey">In Rain</div>
+            <button id="claim-button" onclick="claimRain()">Claim</button>
+            <div id="success-message" class="success-message"></div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <div class="footer">
