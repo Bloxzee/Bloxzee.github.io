@@ -296,6 +296,24 @@
             location.reload();
         }
 
+       
+        // Function to show or hide the 3x badge
+        function toggleBadge(show) {
+            const badge = document.getElementById('badge');
+            if (show) {
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        // Example: Call this function with true or false
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set to true to show the badge or false to hide it
+            toggleBadge(true);
+        });
+
+
         document.addEventListener('DOMContentLoaded', checkCookie);
     </script>
 </head>
@@ -316,7 +334,11 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <h1>Popular Games</h1>
+        <h1>
+            Popular Games 
+            <img id="badge" src="3x.png" alt="Badge" style="display: none; width: 40px; height: 40px; margin-left: 10px;">
+        </h1>
+
         <div class="game-cards">
             <div class="game-card"><a href="/games/flip">Flip</a></div>
             <div class="game-card"><a href="/games/pvp">PvP</a></div>
