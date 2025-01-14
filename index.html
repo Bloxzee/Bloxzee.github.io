@@ -249,6 +249,33 @@
             cursor: pointer;
         }
 
+        /* Badge Styling */
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: #00ff88; /* Background for the badge */
+            color: #ffffff;           /* Text color */
+            border-radius: 5px;       /* Rounded corners */
+            padding: 5px 10px;        /* Spacing inside the badge */
+            margin-left: 10px;        /* Space between "Popular Games" and the badge */
+            font-weight: 600;         /* Bold text */
+            font-size: 14px;          /* Font size */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Optional shadow for depth */
+        }
+
+
+        /* Badge Icon Styling */
+
+        .badge img {
+            width: 20px;              /* Size of the cash icon */
+            height: 20px;
+            margin-right: 5px;        /* Space between the icon and the text */
+            -webkit-user-drag: none;  /* Prevent dragging */
+            user-drag: none;
+        }
+
+
     </style>
     <script>
         function formatNumber(num) {
@@ -295,24 +322,17 @@
             document.cookie = "money=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             location.reload();
         }
-
-       
-        // Function to show or hide the 3x badge
+     
+// Function to show or hide the 3x badge
         function toggleBadge(show) {
             const badge = document.getElementById('badge');
-            if (show) {
-                badge.style.display = 'inline-block';
-            } else {
-                badge.style.display = 'none';
-            }
+            badge.style.display = show ? 'inline-flex' : 'none';
         }
-        
         // Example: Call this function with true or false
         document.addEventListener('DOMContentLoaded', () => {
             // Set to true to show the badge or false to hide it
             toggleBadge(true);
         });
-
 
         document.addEventListener('DOMContentLoaded', checkCookie);
     </script>
@@ -336,8 +356,12 @@
     <div class="main-content">
         <h1>
             Popular Games 
-            <img id="badge" src="3x.png" alt="Badge" style="display: none; width: 40px; height: 40px; margin-left: 10px;">
+            <div id="badge" class="badge" style="display: none;">
+                <img src="cash.svg" alt="Cash Icon">
+                <span>3x</span>
+            </div>
         </h1>
+
 
         <div class="game-cards">
             <div class="game-card"><a href="/games/flip">Flip</a></div>
