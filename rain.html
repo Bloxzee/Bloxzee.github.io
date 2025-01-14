@@ -132,13 +132,14 @@
             transition: background-color 0.3s;
         }
 
-            .rain-box button:hover {
-            background-color: #00cc66;
+        /* Disabled button style */
+        .rain-box button:disabled {
+            background-color: #00ff8861; /* Disabled button color */
+            cursor: pointer; /* Cursor remains pointer */
         }
 
-        .rain-box button:disabled {
-            background-color: #00ff8861;
-            cursor: pointer;
+        .rain-box button:hover {
+            background-color: #00cc66; /* Hover color */
         }
 
         .rain-box .success-message {
@@ -222,11 +223,11 @@
             updateMoney(rainIncrement);
 
             // Show success message and disable button
-            successMessage.textContent = `Successfully claimed ${formatNumber(rainIncrement)} R$ into your account!`;
+            successMessage.textContent = `Successfully claimed ${formatNumber(rainIncrement)} R$!`;
             successMessage.style.display = 'block';
             claimButton.disabled = true;
-            claimButton.style.backgroundColor = '#333333';
-            claimButton.style.cursor = 'not-allowed';
+            claimButton.style.backgroundColor = '#00ff8861'; // Update button background color when disabled
+            claimButton.style.cursor = 'pointer'; // Cursor remains pointer when disabled
         }
 
         // Set the initial rain amount
