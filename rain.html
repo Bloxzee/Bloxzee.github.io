@@ -132,9 +132,13 @@
             transition: background-color 0.3s;
         }
 
+            .rain-box button:hover {
+            background-color: #00cc66;
+        }
+
         .rain-box button:disabled {
-            background-color: #333333;
-            cursor: not-allowed;
+            background-color: #00ff8861;
+            cursor: pointer;
         }
 
         .rain-box .success-message {
@@ -202,7 +206,9 @@
             location.reload();
         }
 
-        function updateMoney() {
+        function updateMoney(amount) {
+            // Update cookie with the new balance
+            currentMoney += amount;
             document.cookie = `money=${currentMoney}; path=/;`;
             checkCookie();
         }
@@ -212,13 +218,11 @@
             const successMessage = document.getElementById('success-message');
             const rainIncrement = Math.floor(rainAmount * 0.001); // 0.1% of rain amount
             
-            // Get the current money from the cookie
-            const currentMoney = parseInt(document.cookie.split('; ').find(row => row.startsWith('money=')).split('=')[1]) || 0;
-            const newMoney = currentMoney + rainIncrement;
-            document.cookie = `money=${newMoney}; path=/;`;
+            // Update balance by adding the rainIncrement
+            updateMoney(rainIncrement);
 
             // Show success message and disable button
-            successMessage.textContent = `Successfully claimed 'cash.svg' ${rainAmount.toLocaleString()}`;
+            successMessage.textContent = `Successfully claimed ${formatNumber(rainIncrement)} R$ into your account!`;
             successMessage.style.display = 'block';
             claimButton.disabled = true;
             claimButton.style.backgroundColor = '#333333';
