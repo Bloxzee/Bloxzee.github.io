@@ -276,10 +276,8 @@
             user-drag: none;
             filter: brightness(0.06);     /* Adjust brightness to create #0f0f0f */
         }
-
-
+        
         /* Announcement Box Styling */
-
         .announcement {
             background-color: #161616; /* Dark background */
             color: #ffffff;            /* White text */
@@ -289,8 +287,13 @@
             font-size: 18px;            /* Font size */
             font-weight: 600;           /* Bold text */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Optional shadow for better visibility */
-}
-        
+            display: block;             /* Announcement box is visible by default */
+        }
+
+        /* Hide the announcement when necessary */
+        .announcement-hidden {
+            display: none;
+        }
         /* Adjust margin-bottom of .counter when announcement is shown */
         .counter-announcement {
             margin-bottom: 40px;  /* Add 20px margin when announcement is shown */
@@ -355,16 +358,27 @@
         });
 
         
-        document.addEventListener('DOMContentLoaded', function () {
+// Flag to control the visibility of the announcement
+
+        let showAnnouncement = true; // Set to false to hide the announcement
+        // Function to check visibility status and update the announcement box
+        function updateAnnouncementVisibility() {
             const announcement = document.getElementById('announcement');
             const counter = document.querySelector('.counter');
-            // Add the class to adjust margin-bottom when the announcement is shown
-            if (announcement.style.display !== 'none') {
+            if (showAnnouncement) {
+                announcement.classList.remove('announcement-hidden');
                 counter.classList.add('counter-announcement');
+            } else {
+                announcement.classList.add('announcement-hidden');
+                counter.classList.remove('counter-announcement');
             }
-        });
+        }
 
+        
+        // Call this function to apply the current visibility status
+        document.addEventListener('DOMContentLoaded', updateAnnouncementVisibility);
 
+        
         document.addEventListener('DOMContentLoaded', checkCookie);
     </script>
 </head>
