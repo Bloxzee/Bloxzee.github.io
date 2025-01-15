@@ -277,6 +277,20 @@
             filter: brightness(0.06);     /* Adjust brightness to create #0f0f0f */
         }
 
+       
+        /* Announcement Box Styling */
+
+        .announcement {
+            background-color: #161616; /* Dark background */
+            color: #ffffff;            /* White text */
+            padding: 20px 40px;         /* Add some padding */
+            border-radius: 10px;        /* Optional rounded corners */
+            margin-bottom: 20px;        /* Space between the announcement and the header */
+            font-size: 18px;            /* Font size */
+            font-weight: 600;           /* Bold text */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Optional shadow for better visibility */
+        }
+
     </style>
     <script>
         function formatNumber(num) {
@@ -356,6 +370,12 @@
 
     <!-- Main Content -->
     <div class="main-content">
+
+        <!-- Announcement Box -->
+        <div id="announcement" class="announcement">
+            <p>This is an important announcement! Don't miss out on our latest update!</p>
+        </div>
+        
         <h1>
             Popular Games 
             <div id="badge" class="badge" style="display: none;">
