@@ -277,18 +277,23 @@
             filter: brightness(0.06);     /* Adjust brightness to create #0f0f0f */
         }
 
-       
+
         /* Announcement Box Styling */
 
         .announcement {
             background-color: #161616; /* Dark background */
             color: #ffffff;            /* White text */
-            padding: 20px 40px;         /* Add some padding */
+            padding: 1px 40px;         /* Add 1px top/bottom padding and 40px left/right padding */
             border-radius: 10px;        /* Optional rounded corners */
             margin-bottom: 20px;        /* Space between the announcement and the header */
             font-size: 18px;            /* Font size */
             font-weight: 600;           /* Bold text */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Optional shadow for better visibility */
+}
+        
+        /* Adjust margin-bottom of .counter when announcement is shown */
+        .counter-announcement {
+            margin-bottom: 40px;  /* Add 20px margin when announcement is shown */
         }
 
     </style>
@@ -348,6 +353,17 @@
             // Set to true to show the badge or false to hide it
             toggleBadge(false);
         });
+
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            const announcement = document.getElementById('announcement');
+            const counter = document.querySelector('.counter');
+            // Add the class to adjust margin-bottom when the announcement is shown
+            if (announcement.style.display !== 'none') {
+                counter.classList.add('counter-announcement');
+            }
+        });
+
 
         document.addEventListener('DOMContentLoaded', checkCookie);
     </script>
