@@ -172,6 +172,21 @@
             font-weight: 600;
             color: #ffffff;
         }
+
+        /* Bet result message */
+        .bet-result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .bet-result.win {
+            color: #00ff88; /* Green for win */
+        }
+
+        .bet-result.loss {
+            color: #ff0000; /* Red for loss */
+        }
     </style>
     <script>
         // Function to get the 'money' cookie value
@@ -219,6 +234,11 @@
 
             updateMoneyDisplay();
             document.querySelector('#betAmount').value = ''; // Clear bet input
+
+            // Display result message
+            const resultMessage = document.querySelector('#resultMessage');
+            resultMessage.textContent = win ? "You Won!" : "You Lost!";
+            resultMessage.className = `bet-result ${win ? 'win' : 'loss'}`; // Set class based on result
         }
 
         // Function to log out and destroy the money cookie
@@ -272,6 +292,8 @@
             <div class="bet-section">
                 <input type="number" id="betAmount" class="bet-input" placeholder="Bet amount" />
                 <button class="bet-button" onclick="placeBet()">Bet</button>
+                <!-- Result Message -->
+                <div id="resultMessage" class="bet-result"></div>
             </div>
         </div>
     </div>
