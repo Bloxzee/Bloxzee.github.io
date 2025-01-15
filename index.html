@@ -290,6 +290,29 @@
             display: block;             /* Announcement box is visible by default */
         }
 
+       
+        /* Style anchor tags inside the announcement */
+
+        .announcement a {
+            color: #00ff88;            /* Green link color */
+            text-decoration: none;     /* Remove underline */
+            font-weight: 600;          /* Optional: keep boldness for links */
+            transition: color 0.3s;    /* Smooth transition for hover effect */
+        }
+
+
+        /* Prevent the link from turning purple (visited state) */
+
+        .announcement a:visited {
+            color: #00ff88;            /* Keep the same color as normal links */
+        }
+
+        /* Hover effect for links in the announcement */
+        .announcement a:hover {
+            color: #00cc66;            /* Change to a lighter green when hovered */
+        }
+
+
         /* Hide the announcement when necessary */
         .announcement-hidden {
             display: none;
@@ -354,7 +377,7 @@
         // Example: Call this function with true or false
         document.addEventListener('DOMContentLoaded', () => {
             // Set to true to show the badge or false to hide it
-            toggleBadge(false);
+            toggleBadge(false); // (show) or (hide)
         });
 
         
@@ -403,7 +426,7 @@
 
         <!-- Announcement Box -->
         <div id="announcement" class="announcement">
-            <p>This is an important announcement! Don't miss out on our latest update!</p>
+            <p>Our new <a href="https://bloxzee.github.io" target="/rain">Click here</a> feature is live— get ready for a shower of earnings!</p>
         </div>
         
         <h1>
