@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bloxzee - Rain</title>
+    <title>Bloxzee - Giveaways</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="icon.png" type="image/png">
     <style>
@@ -105,6 +105,64 @@
             text-align: center;
         }
 
+        /* Giveaways */
+        .giveaway-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .giveaway-card {
+            background-color: #1e1e1e;
+            width: 280px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .giveaway-card .timer {
+            font-size: 16px;
+            color: #ff4d4d;
+            font-weight: 600;
+        }
+
+        .giveaway-card .amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00ff88;
+            margin: 15px 0;
+        }
+
+        .giveaway-card .join-btn {
+            background-color: #00ff88;
+            color: #0f0f0f;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .giveaway-card .join-btn:disabled {
+            background-color: #00ff8861;
+            cursor: not-allowed;
+        }
+
+        .giveaway-card .join-btn:hover {
+            background-color: #00cc66;
+        }
+
+        .giveaway-card .joined {
+            font-size: 14px;
+            color: #aaaaaa;
+            margin-top: 10px;
+        }
+
+        .giveaway-card .joined span {
+            color: #00ff88;
+        }
+
         /* Footer */
         .footer {
             background-color: #161616;
@@ -119,50 +177,82 @@
         }
     </style>
     <script>
-        let currentMoney;
+        let giveaways = [
+            {
+                "start-date": 1700000000, // Unix timestamp for start
+                "end-date": 1703600000, // Unix timestamp for end
+                "amount": 1000000,
+                "update": 5,
+                "joined": 0
+            },
+            {
+                "start-date": 1702000000,
+                "end-date": 1704600000,
+                "amount": 500000,
+                "update": 10,
+                "joined": 0
+            },
+            // Add more giveaways as needed
+        ];
 
         function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return num.toLocaleString();
         }
 
-        function checkCookie() {
-            const cookieValue = document.cookie
-                .split('; ')
-                .find(row => row.startsWith('money='))
-                ?.split('=')[1];
+        function updateGiveawayCard() {
+            const currentUnix = Math.floor(Date.now() / 1000);
+            const giveawayCards = document.querySelectorAll('.giveaway-card');
+            giveaways.forEach((giveaway, index) => {
+                const card = giveawayCards[index];
+                const timeRemaining = giveaway["end-date"] - currentUnix;
 
-            if (!cookieValue) {
-                window.location.href = '/';
-                return;
-            }
+                // Update Joined
+                giveaway.joined = Math.max(0, Math.floor(((currentUnix - giveaway["start-date"]) * giveaway.update) / 1000));
+                card.querySelector('.joined').innerHTML = `${formatNumber(giveaway.joined)}+ Joined`;
 
-            currentMoney = parseInt(cookieValue);
-            const formattedMoney = formatNumber(currentMoney);
-            const topNav = document.querySelector('.top-nav');
-            topNav.innerHTML = `
-                <div class="money-counter">
-                    <img src="cash.svg" alt="Cash">
-                    <span><b>${formattedMoney}</b></span>
-                </div>
-                <a href="#" class="login" onclick="logout()">Logout</a>
-            `;
+                if (timeRemaining > 0) {
+                    const hours = Math.floor(timeRemaining / 3600);
+                    const minutes = Math.floor((timeRemaining % 3600) / 60);
+                    const seconds = timeRemaining % 60;
+                    card.querySelector('.timer').innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+                } else {
+                    card.querySelector('.timer').innerHTML = 'Giveaway Ended';
+                    card.querySelector('.timer').style.color = 'red';
+                    card.querySelector('.join-btn').disabled = true;
+                    card.querySelector('.join-btn').innerHTML = 'Joined';
+                }
+            });
         }
 
-        function logout() {
-            document.cookie = "money=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            location.reload();
+        function joinGiveaway(button, index) {
+            const card = button.closest('.giveaway-card');
+            button.disabled = true;
+            button.innerHTML = 'Joined';
         }
 
-        function updateMoney(amount) {
-            // Update cookie with the new balance
-            currentMoney += amount;
-            document.cookie = `money=${currentMoney}; path=/;`;
+        window.onload = () => {
+            setInterval(updateGiveawayCard, 1000);
+            const mainContent = document.querySelector('.main-content');
+            let giveawaysHTML = `<h1>Giveaways</h1><div class="giveaway-cards">`;
+
+            giveaways.forEach((giveaway, index) => {
+                giveawaysHTML += `
+                    <div class="giveaway-card">
+                        <div class="timer">Loading...</div>
+                        <div class="amount">${formatNumber(giveaway.amount)} <img src="cash.svg" alt="Cash"></div>
+                        <div class="joined">0+ Joined</div>
+                        <button class="join-btn" onclick="joinGiveaway(this, ${index})">Join</button>
+                    </div>
+                `;
+            });
+
+            giveawaysHTML += `</div>`;
+            mainContent.innerHTML = giveawaysHTML;
+            updateGiveawayCard();
             checkCookie();
-        }
+        };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            checkCookie();
-        });
+        
     </script>
 </head>
 <body>
@@ -183,13 +273,13 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <h1>Rain</h1>
-        <!-- Additional content goes here -->
+        <!-- Giveaways section will be dynamically generated here -->
     </div>
 
     <!-- Footer -->
     <div class="footer">
         © 2025 Bloxzee All Rights Reserved.
     </div>
+
 </body>
 </html>
