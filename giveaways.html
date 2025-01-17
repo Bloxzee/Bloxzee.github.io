@@ -135,12 +135,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 10px;
         }
 
         .giveaway-card .amount img {
             width: 20px;
             height: 20px;
-            margin-right: 5px;
         }
 
         .giveaway-card .join-btn {
@@ -169,17 +169,6 @@
         .giveaway-card .joined-count .count {
             font-weight: bold;
             color: #00ff88; /* Green color */
-        }
-
-        /* Change amount to text */
-        .giveaway-card .amount span {
-            font-size: 20px;
-            color: #ffffff;
-            font-weight: 600;
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
         /* Footer */
@@ -287,8 +276,8 @@
 
         function createGiveawayCard(amount, startDate, endDate, joinedCountText, isEnded, buttonState) {
             const currentTimestamp = Math.floor(Date.now() / 1000);
-            const isOngoing = currentTimestamp < endDate;
-            const joinBtnDisabled = isOngoing ? "" : "disabled";
+            const isOngoing = !isEnded && currentTimestamp < endDate;
+            const joinBtnDisabled = isOngoing && buttonState === "Join Now" ? "" : "disabled";
             const joinBtnText = isOngoing && buttonState === "Join Now" ? "Join Now" : "Joined!";
 
             const card = `
@@ -308,9 +297,12 @@
         }
 
         function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
+            const days = Math.floor(seconds / (24 * 3600));
+            const hours = Math.floor((seconds % (24 * 3600)) / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
             const remainingSeconds = seconds % 60;
-            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+
+            return `${days}d ${hours}h ${minutes}m ${remainingSeconds}s`;
         }
 
         function joinGiveaway(event) {
