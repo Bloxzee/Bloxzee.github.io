@@ -234,7 +234,8 @@
                 "amount": 100000,
                 "update": 3,
                 "joined": 0,
-                "joined-users": []
+                "joined-users": [],
+                "button-state": "Join Now" // Track the button state separately
             },
             {
                 "start-date": 1737148156,
@@ -242,7 +243,8 @@
                 "amount": 500000,
                 "update": 4,
                 "joined": 0,
-                "joined-users": []
+                "joined-users": [],
+                "button-state": "Join Now"
             }
         ];
 
@@ -252,33 +254,33 @@
             giveawayCards.innerHTML = '';
 
             giveaways.forEach(giveaway => {
-                let { "start-date": startDate, "end-date": endDate, amount, update, joined, "joined-users": joinedUsers } = giveaway;
+                let { "start-date": startDate, "end-date": endDate, amount, update, joined, "joined-users": joinedUsers, "button-state": buttonState } = giveaway;
 
                 if (currentTimestamp >= endDate) {
                     // Giveaway has ended, don't update joined anymore
                     giveaway.joined = calculateJoined(startDate, endDate, update);
-                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(giveaway.joined)} Joined`, true);
+                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(giveaway.joined)} Joined`, true, buttonState);
                 } else {
                     // Giveaway is ongoing, update joined
                     if (joined === 0) {
                         joined = calculateJoined(startDate, currentTimestamp, update);
                         giveaway.joined = joined;
                     }
-                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(joined)} Joined`, false);
+                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(joined)} Joined`, false, buttonState);
                 }
             });
         }
 
         function calculateJoined(startDate, endDate, update) {
-            // Calculate the total joins for both ongoing and ended giveaways
-            return Math.max(0, Math.floor((endDate - startDate) * update));
+            const duration = endDate - startDate;
+            return duration * update;
         }
 
-        function createGiveawayCard(amount, startDate, endDate, joinedCountText, isEnded) {
+        function createGiveawayCard(amount, startDate, endDate, joinedCountText, isEnded, buttonState) {
             const currentTimestamp = Math.floor(Date.now() / 1000);
             const isOngoing = currentTimestamp < endDate;
-            const joinBtnText = isOngoing ? "Join Now" : "Giveaway Ended";
             const joinBtnDisabled = isOngoing ? "" : "disabled";
+            const joinBtnText = isOngoing && buttonState === "Join Now" ? "Join Now" : "Joined!";
 
             const card = `
                 <div class="giveaway-card">
