@@ -115,32 +115,43 @@
 
         .giveaway-card {
             background-color: #1e1e1e;
-            width: 280px;
-            padding: 20px;
             border-radius: 10px;
+            padding: 20px;
+            width: 250px;
             text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .giveaway-card .timer {
-            font-size: 16px;
-            color: #ff4d4d;
-            font-weight: 600;
+            font-size: 14px;
+            color: #ff5555;
         }
 
         .giveaway-card .amount {
-            font-size: 24px;
-            font-weight: 700;
-            color: #00ff88;
-            margin: 15px 0;
+            font-size: 20px;
+            color: #ffffff;
+            font-weight: 600;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .giveaway-card .amount img {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
         }
 
         .giveaway-card .join-btn {
+            margin-top: 15px;
+            padding: 8px 20px;
             background-color: #00ff88;
             color: #0f0f0f;
-            padding: 10px 20px;
+            border: none;
             border-radius: 5px;
-            font-weight: bold;
             cursor: pointer;
+            font-weight: 600;
             transition: background-color 0.3s;
         }
 
@@ -149,17 +160,14 @@
             cursor: not-allowed;
         }
 
-        .giveaway-card .join-btn:hover {
-            background-color: #00cc66;
-        }
-
-        .giveaway-card .joined {
+        .giveaway-card .joined-count {
+            margin-top: 5px;
             font-size: 14px;
-            color: #aaaaaa;
-            margin-top: 10px;
+            color: #ffffff;
         }
 
-        .giveaway-card .joined span {
+        .giveaway-card .joined-count .count {
+            font-weight: bold;
             color: #00ff88;
         }
 
@@ -177,88 +185,124 @@
         }
     </style>
     <script>
-        let giveaways = [
+        function checkCookie() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('money='))
+                ?.split('=')[1];
+
+            if (!cookieValue) {
+                window.location.href = '/';
+                return;
+            }
+
+            currentMoney = parseInt(cookieValue);
+            const formattedMoney = formatNumber(currentMoney);
+            const topNav = document.querySelector('.top-nav');
+            topNav.innerHTML = `
+                <div class="money-counter">
+                    <img src="cash.svg" alt="Cash">
+                    <span><b>${formattedMoney}</b></span>
+                </div>
+                <a href="#" class="login" onclick="logout()">Logout</a>
+            `;
+        }
+
+        function logout() {
+            document.cookie = "money=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            location.reload();
+        }
+
+        function formatNumber(number) {
+            return number.toLocaleString();
+        }
+
+        const giveaways = [
             {
-                "start-date": 1700000000, // Unix timestamp for start
-                "end-date": 1703600000, // Unix timestamp for end
-                "amount": 1000000,
+                "start-date": 1677200000,
+                "end-date": 1677290000,
+                "amount": 100000,
                 "update": 5,
                 "joined": 0
             },
             {
-                "start-date": 1702000000,
-                "end-date": 1704600000,
+                "start-date": 1677300000,
+                "end-date": 1677390000,
                 "amount": 500000,
                 "update": 10,
                 "joined": 0
-            },
-            // Add more giveaways as needed
+            }
         ];
 
-        function formatNumber(num) {
-            return num.toLocaleString();
-        }
+        function updateGiveaways() {
+            const currentTimestamp = Math.floor(Date.now() / 1000);
+            const giveawayCards = document.querySelector('.giveaway-cards');
+            giveawayCards.innerHTML = '';
 
-        function updateGiveawayCard() {
-            const currentUnix = Math.floor(Date.now() / 1000);
-            const giveawayCards = document.querySelectorAll('.giveaway-card');
-            giveaways.forEach((giveaway, index) => {
-                const card = giveawayCards[index];
-                const timeRemaining = giveaway["end-date"] - currentUnix;
+            giveaways.forEach(giveaway => {
+                let { "start-date": startDate, "end-date": endDate, amount, update, joined } = giveaway;
 
-                // Update Joined
-                giveaway.joined = Math.max(0, Math.floor(((currentUnix - giveaway["start-date"]) * giveaway.update) / 1000));
-                card.querySelector('.joined').innerHTML = `${formatNumber(giveaway.joined)}+ Joined`;
-
-                if (timeRemaining > 0) {
-                    const hours = Math.floor(timeRemaining / 3600);
-                    const minutes = Math.floor((timeRemaining % 3600) / 60);
-                    const seconds = timeRemaining % 60;
-                    card.querySelector('.timer').innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+                if (currentTimestamp >= endDate) {
+                    // Giveaway has ended
+                    const giveawayCard = createGiveawayCard(startDate, endDate, amount, joined, true);
+                    giveawayCards.appendChild(giveawayCard);
                 } else {
-                    card.querySelector('.timer').innerHTML = 'Giveaway Ended';
-                    card.querySelector('.timer').style.color = 'red';
-                    card.querySelector('.join-btn').disabled = true;
-                    card.querySelector('.join-btn').innerHTML = 'Joined';
+                    // Giveaway is ongoing
+                    const giveawayCard = createGiveawayCard(startDate, endDate, amount, joined, false);
+                    giveawayCards.appendChild(giveawayCard);
+
+                    const secondsRemaining = endDate - currentTimestamp;
+                    const joinedCount = Math.floor(secondsRemaining * update);
+                    giveaway.joined = joinedCount;
                 }
             });
         }
 
-        function joinGiveaway(button, index) {
-            const card = button.closest('.giveaway-card');
+        function createGiveawayCard(startDate, endDate, amount, joined, isEnded) {
+            const card = document.createElement('div');
+            card.classList.add('giveaway-card');
+
+            const timerText = isEnded ? 'Giveaway Ended' : `${formatTime(endDate - Math.floor(Date.now() / 1000))}`;
+            const joinBtnDisabled = isEnded ? 'disabled' : '';
+            const joinBtnText = isEnded ? 'Join' : 'Join';
+
+            card.innerHTML = `
+                <div class="timer ${isEnded ? 'ended' : ''}">${timerText}</div>
+                <div class="amount">
+                    <img src="cash.svg" alt="Cash">
+                    ${formatNumber(amount)}
+                </div>
+                <div class="joined-count">
+                    <span class="count">${formatNumber(joined)}</span> Joined
+                </div>
+                <button class="join-btn" ${joinBtnDisabled} onclick="joinGiveaway(this)">${joinBtnText}</button>
+            `;
+
+            return card;
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secondsRemaining = seconds % 60;
+            return `${hours}h ${minutes}m ${secondsRemaining}s`;
+        }
+
+        function joinGiveaway(button) {
             button.disabled = true;
             button.innerHTML = 'Joined';
         }
 
         window.onload = () => {
-            setInterval(updateGiveawayCard, 1000);
-            const mainContent = document.querySelector('.main-content');
-            let giveawaysHTML = `<h1>Giveaways</h1><div class="giveaway-cards">`;
-
-            giveaways.forEach((giveaway, index) => {
-                giveawaysHTML += `
-                    <div class="giveaway-card">
-                        <div class="timer">Loading...</div>
-                        <div class="amount">${formatNumber(giveaway.amount)} <img src="cash.svg" alt="Cash"></div>
-                        <div class="joined">0+ Joined</div>
-                        <button class="join-btn" onclick="joinGiveaway(this, ${index})">Join</button>
-                    </div>
-                `;
-            });
-
-            giveawaysHTML += `</div>`;
-            mainContent.innerHTML = giveawaysHTML;
-            updateGiveawayCard();
             checkCookie();
+            setInterval(updateGiveaways, 1000);
         };
-
-        
     </script>
 </head>
 <body>
     <!-- Top Navigation -->
     <div class="top-nav">
-        <a href="#" class="login" onclick="openLoginModal()">Login</a>
+        <!-- Content will be dynamically inserted by JavaScript -->
     </div>
 
     <!-- Left Navigation -->
@@ -273,13 +317,13 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Giveaways section will be dynamically generated here -->
+        <h1>Giveaways</h1>
+        <div class="giveaway-cards"></div>
     </div>
 
     <!-- Footer -->
     <div class="footer">
         © 2025 Bloxzee All Rights Reserved.
     </div>
-
 </body>
 </html>
