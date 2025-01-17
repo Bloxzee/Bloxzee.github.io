@@ -217,12 +217,22 @@
             return number.toLocaleString();
         }
 
+        function abbreviateNumber(number) {
+            const units = ["", "K", "M", "B", "T"];
+            let index = 0;
+            while (number >= 1000 && index < units.length - 1) {
+                number /= 1000;
+                index++;
+            }
+            return `${number.toFixed(1)}${units[index]}`;
+        }
+
         const giveaways = [
             {
-                "start-date": 1737148156,
-                "end-date": 1737425356,
-                "amount": 2500000,
-                "update": 2,
+                "start-date": 1677200000,
+                "end-date": 1677290000,
+                "amount": 100000,
+                "update": 5,
                 "joined": 0
             },
             {
@@ -273,9 +283,9 @@
                     ${formatNumber(amount)}
                 </div>
                 <div class="joined-count">
-                    <span class="count">${formatNumber(joined)}</span> Joined
+                    <span class="count">${abbreviateNumber(joined)}</span> Joined
                 </div>
-                <button class="join-btn" ${joinBtnDisabled} onclick="joinGiveaway(this)">${joinBtnText}</button>
+                <button class="join-btn" ${joinBtnDisabled}>${joinBtnText}</button>
             `;
 
             return card;
@@ -286,11 +296,6 @@
             const minutes = Math.floor((seconds % 3600) / 60);
             const secondsRemaining = seconds % 60;
             return `${hours}h ${minutes}m ${secondsRemaining}s`;
-        }
-
-        function joinGiveaway(button) {
-            button.disabled = true;
-            button.innerHTML = 'Joined';
         }
 
         window.onload = () => {
