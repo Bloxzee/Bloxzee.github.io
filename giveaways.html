@@ -256,12 +256,12 @@
 
                 if (currentTimestamp >= endDate) {
                     // Giveaway has ended
-                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(joined)} Joined`, true);
-                    giveawayCards.querySelector('.timer').innerText = "Giveaway Ended";
+                    giveaway.joined = calculateJoined(startDate, currentTimestamp, update);
+                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(giveaway.joined)} Joined`, true);
                 } else {
                     // Giveaway is ongoing
                     if (joined === 0) {
-                        joined = Math.max(0, (currentTimestamp - startDate) * update);
+                        joined = calculateJoined(startDate, currentTimestamp, update);
                         giveaway.joined = joined;
                     }
                     giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(joined)} Joined`, false);
@@ -269,13 +269,19 @@
             });
         }
 
+        function calculateJoined(startDate, currentTimestamp, update) {
+            return Math.max(0, Math.floor((currentTimestamp - startDate) * update));
+        }
+
         function createGiveawayCard(amount, startDate, endDate, joinedCountText, isEnded) {
-            const joinBtnDisabled = isEnded ? 'disabled' : '';
-            const joinBtnText = isEnded ? 'Join' : 'Join Now';
+            const currentTimestamp = Math.floor(Date.now() / 1000);
+            const isOngoing = currentTimestamp < endDate;
+            const joinBtnText = isOngoing ? "Join Now" : "Giveaway Ended";
+            const joinBtnDisabled = isOngoing ? "" : "disabled";
 
             const card = `
                 <div class="giveaway-card">
-                    <div class="timer">${isEnded ? 'Giveaway Ended' : formatTime(endDate - Math.floor(Date.now() / 1000))}</div>
+                    <div class="timer">${isEnded ? 'Giveaway Ended' : formatTime(endDate - currentTimestamp)}</div>
                     <div class="amount">
                         <img src="cash.svg" alt="Cash">
                         <span>${amount}</span>
@@ -315,10 +321,7 @@
     </script>
 </head>
 <body>
-    <div class="top-nav">
-        <!-- Dynamically filled by JavaScript -->
-    </div>
-
+    <div class="top-nav"></div>
     <div class="left-nav">
         <div class="logo">BLOX<span>ZEE</span></div>
         <a href="/">Games</a>
@@ -327,12 +330,10 @@
         <a href="/promo">Promotions</a>
         <a href="/about">About</a>
     </div>
-
     <div class="main-content">
         <h1>Giveaways</h1>
         <div class="giveaway-cards"></div>
     </div>
-
     <div class="footer">
         © 2025 Bloxzee All Rights Reserved.
     </div>
