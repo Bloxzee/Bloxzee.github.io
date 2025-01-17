@@ -229,15 +229,15 @@
 
         const giveaways = [
             {
-                "start-date": 1737148156,
-                "end-date": 1737425356,
+                "start-date": 1,
+                "end-date": 2,
                 "amount": 100000,
-                "update": 2,
+                "update": 3,
                 "joined": 0
             },
             {
-                "start-date": 1677300000,
-                "end-date": 1677390000,
+                "start-date": 1,
+                "end-date": 2,
                 "amount": 500000,
                 "update": 10,
                 "joined": 0
@@ -253,41 +253,38 @@
                 let { "start-date": startDate, "end-date": endDate, amount, update, joined } = giveaway;
 
                 if (currentTimestamp >= endDate) {
-                    // Giveaway has ended
-                    const giveawayCard = createGiveawayCard(startDate, endDate, amount, joined, true);
-                    giveawayCards.appendChild(giveawayCard);
+                    // Giveaway has ended, show the final joined count
+                    joined = Math.min(update * (endDate - startDate), joined);
+                    const joinedCountText = `${abbreviateNumber(joined)} Joined`;
+                    giveaway.joined = joined; // Save the final joined count
+                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, joinedCountText, true);
                 } else {
-                    // Giveaway is ongoing
-                    const giveawayCard = createGiveawayCard(startDate, endDate, amount, joined, false);
-                    giveawayCards.appendChild(giveawayCard);
-
-                    const secondsRemaining = endDate - currentTimestamp;
-                    const joinedCount = Math.floor(secondsRemaining * update);
-                    giveaway.joined = joinedCount;
+                    // Giveaway is ongoing, calculate joined count
+                    const elapsedTime = currentTimestamp - startDate;
+                    joined += update * elapsedTime;
+                    const joinedCountText = `${abbreviateNumber(joined)} Joined`;
+                    giveaway.joined = joined; // Update the joined count
+                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, joinedCountText, false);
                 }
             });
         }
 
-        function createGiveawayCard(startDate, endDate, amount, joined, isEnded) {
-            const card = document.createElement('div');
-            card.classList.add('giveaway-card');
-
-            const timerText = isEnded ? 'Giveaway Ended' : `${formatTime(endDate - Math.floor(Date.now() / 1000))}`;
+        function createGiveawayCard(amount, startDate, endDate, joinedCountText, isEnded) {
             const joinBtnDisabled = isEnded ? 'disabled' : '';
-            const joinBtnText = isEnded ? 'Join' : 'Join';
-
-            card.innerHTML = `
-                <div class="timer ${isEnded ? 'ended' : ''}">${timerText}</div>
-                <div class="amount">
-                    <img src="cash.svg" alt="Cash">
-                    ${formatNumber(amount)}
+            const joinBtnText = isEnded ? 'Join' : 'Join Now';
+            const card = `
+                <div class="giveaway-card">
+                    <div class="timer">${formatTime(endDate - Math.floor(Date.now() / 1000))}</div>
+                    <div class="amount">
+                        <img src="cash.svg" alt="Cash">
+                        <span>${amount}</span>
+                    </div>
+                    <div class="joined-count">
+                        <span class="count">${joinedCountText}</span>
+                    </div>
+                    <button class="join-btn" ${joinBtnDisabled}>${joinBtnText}</button>
                 </div>
-                <div class="joined-count">
-                    <span class="count">${abbreviateNumber(joined)}</span> Joined
-                </div>
-                <button class="join-btn" ${joinBtnDisabled}>${joinBtnText}</button>
             `;
-
             return card;
         }
 
