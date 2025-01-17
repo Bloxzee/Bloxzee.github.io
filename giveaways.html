@@ -168,7 +168,18 @@
 
         .giveaway-card .joined-count .count {
             font-weight: bold;
-            color: #00ff88;
+            color: #00ff88; /* Green color */
+        }
+
+        /* Change amount to text */
+        .giveaway-card .amount span {
+            font-size: 20px;
+            color: #ffffff;
+            font-weight: 600;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* Footer */
@@ -231,16 +242,16 @@
             {
                 "start-date": 1737148156,
                 "end-date": 1737425356,
-                "amount": 100000,
+                "amount": "Limited Offer",  // Updated to text
                 "update": 3,
                 "joined": 0,
                 "joined-users": [],
-                "button-state": "Join Now" // Track the button state separately
+                "button-state": "Join Now"
             },
             {
                 "start-date": 1737148156,
                 "end-date": 1737148356,
-                "amount": 500000,
+                "amount": "Exclusive Prize",  // Updated to text
                 "update": 4,
                 "joined": 0,
                 "joined-users": [],
@@ -248,33 +259,30 @@
             }
         ];
 
-        let giveawayStates = []; // This will store the current state of the giveaways (including join button state)
-
         function updateGiveaways() {
             const currentTimestamp = Math.floor(Date.now() / 1000);
             const giveawayCards = document.querySelector('.giveaway-cards');
             giveawayCards.innerHTML = '';
 
-            giveaways.forEach((giveaway, index) => {
+            giveaways.forEach(giveaway => {
                 let { "start-date": startDate, "end-date": endDate, amount, update, joined, "joined-users": joinedUsers, "button-state": buttonState } = giveaway;
 
-                // If the giveaway has ended, calculate the joins only once
                 if (currentTimestamp >= endDate) {
                     giveaway.joined = calculateJoined(startDate, endDate, update);
-                    giveawayStates[index] = {
-                        ...giveawayStates[index], // Preserve button state
-                        joined: giveaway.joined
-                    };
                     giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(giveaway.joined)} Joined`, true, buttonState);
                 } else {
-                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(giveaway.joined)} Joined`, false, buttonState);
+                    if (joined === 0) {
+                        joined = calculateJoined(startDate, currentTimestamp, update);
+                        giveaway.joined = joined;
+                    }
+                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(joined)} Joined`, false, buttonState);
                 }
             });
         }
 
         function calculateJoined(startDate, endDate, update) {
             const duration = endDate - startDate;
-            return Math.floor(duration * update);
+            return duration * update;
         }
 
         function createGiveawayCard(amount, startDate, endDate, joinedCountText, isEnded, buttonState) {
@@ -293,59 +301,44 @@
                     <div class="joined-count">
                         <span class="count">${joinedCountText}</span>
                     </div>
-                    <button class="join-btn" ${joinBtnDisabled} onclick="joinGiveaway(event, ${startDate}, ${endDate}, ${amount})">${joinBtnText}</button>
+                    <button class="join-btn" ${joinBtnDisabled} onclick="joinGiveaway(event)">${joinBtnText}</button>
                 </div>
             `;
             return card;
         }
 
-        function joinGiveaway(event, startDate, endDate, amount) {
-            const button = event.target;
-            if (!button.disabled) {
-                button.innerText = 'Joined!';
-                button.disabled = true;
-
-                // Update the button state for future page reloads
-                const currentTimestamp = Math.floor(Date.now() / 1000);
-                const joined = calculateJoined(startDate, endDate, 3); // Calculate based on `update` factor
-                const updatedGiveaway = giveaways.find(g => g["start-date"] === startDate && g["end-date"] === endDate);
-                updatedGiveaway.joined++;
-            }
-        }
-
         function formatTime(seconds) {
-            if (seconds <= 0) {
-                return "Giveaway Ended";
-            }
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secondsRemaining = seconds % 60;
-            return `${hours}h ${minutes}m ${secondsRemaining}s`;
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
         }
 
-        window.onload = () => {
+        function joinGiveaway(event) {
+            event.target.disabled = true;
+            event.target.textContent = 'Joined!';
+        }
+
+        window.onload = function() {
             checkCookie();
             updateGiveaways();
-            setInterval(updateGiveaways, 1000); // Timer still updates every second
         };
     </script>
 </head>
 <body>
     <div class="top-nav"></div>
     <div class="left-nav">
-        <div class="logo">BLOX<span>ZEE</span></div>
-        <a href="/">Games</a>
-        <a href="/rain">Rain</a>
-        <a href="/funds">Funds</a>
-        <a href="/promo">Promotions</a>
-        <a href="/about">About</a>
+        <div class="logo"><span>Bloxzee</span> Giveaways</div>
+        <a href="#">Home</a>
+        <a href="#">My Account</a>
+        <a href="#">Leaderboard</a>
+        <a href="#">Settings</a>
     </div>
     <div class="main-content">
-        <h1>Giveaways</h1>
+        <h1>Current Giveaways</h1>
         <div class="giveaway-cards"></div>
     </div>
     <div class="footer">
-        © 2025 Bloxzee All Rights Reserved.
+        © 2025 Bloxzee. All rights reserved.
     </div>
 </body>
 </html>
