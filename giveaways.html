@@ -255,11 +255,11 @@
                 let { "start-date": startDate, "end-date": endDate, amount, update, joined, "joined-users": joinedUsers } = giveaway;
 
                 if (currentTimestamp >= endDate) {
-                    // Giveaway has ended
-                    giveaway.joined = calculateJoined(startDate, currentTimestamp, update);
+                    // Giveaway has ended, don't update joined anymore
+                    giveaway.joined = calculateJoined(startDate, endDate, update);
                     giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(giveaway.joined)} Joined`, true);
                 } else {
-                    // Giveaway is ongoing
+                    // Giveaway is ongoing, update joined
                     if (joined === 0) {
                         joined = calculateJoined(startDate, currentTimestamp, update);
                         giveaway.joined = joined;
@@ -269,8 +269,9 @@
             });
         }
 
-        function calculateJoined(startDate, currentTimestamp, update) {
-            return Math.max(0, Math.floor((currentTimestamp - startDate) * update));
+        function calculateJoined(startDate, endDate, update) {
+            // Calculate the total joins for both ongoing and ended giveaways
+            return Math.max(0, Math.floor((endDate - startDate) * update));
         }
 
         function createGiveawayCard(amount, startDate, endDate, joinedCountText, isEnded) {
