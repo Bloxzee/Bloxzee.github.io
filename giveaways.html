@@ -253,18 +253,16 @@
                 let { "start-date": startDate, "end-date": endDate, amount, update, joined } = giveaway;
 
                 if (currentTimestamp >= endDate) {
-                    // Giveaway has ended, show the final joined count
-                    joined = Math.min(update * (endDate - startDate), joined);
-                    const joinedCountText = `${abbreviateNumber(joined)} Joined`;
-                    giveaway.joined = joined; // Save the final joined count
-                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, joinedCountText, true);
+                    // Giveaway has ended, show "Giveaway Ended" and the final joined count
+                    joined = Math.max(0, (currentTimestamp - startDate) * update);
+                    giveaway.joined = joined; // Set the joined count
+                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(joined)} Joined`, true);
+                    giveawayCards.querySelector('.timer').innerText = "Giveaway Ended";
                 } else {
-                    // Giveaway is ongoing, calculate joined count
-                    const elapsedTime = currentTimestamp - startDate;
-                    joined += update * elapsedTime;
-                    const joinedCountText = `${abbreviateNumber(joined)} Joined`;
-                    giveaway.joined = joined; // Update the joined count
-                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, joinedCountText, false);
+                    // Giveaway is ongoing, calculate joined count once based on start time
+                    joined = Math.max(0, (currentTimestamp - startDate) * update);
+                    giveaway.joined = joined; // Set the joined count
+                    giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(joined)} Joined`, false);
                 }
             });
         }
@@ -274,7 +272,7 @@
             const joinBtnText = isEnded ? 'Join' : 'Join Now';
             const card = `
                 <div class="giveaway-card">
-                    <div class="timer">${formatTime(endDate - Math.floor(Date.now() / 1000))}</div>
+                    <div class="timer">${isEnded ? 'Giveaway Ended' : formatTime(endDate - Math.floor(Date.now() / 1000))}</div>
                     <div class="amount">
                         <img src="cash.svg" alt="Cash">
                         <span>${amount}</span>
@@ -289,6 +287,9 @@
         }
 
         function formatTime(seconds) {
+            if (seconds <= 0) {
+                return "Giveaway Ended";
+            }
             const hours = Math.floor(seconds / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
             const secondsRemaining = seconds % 60;
@@ -297,7 +298,8 @@
 
         window.onload = () => {
             checkCookie();
-            setInterval(updateGiveaways, 1000);
+            updateGiveaways();
+            setInterval(updateGiveaways, 1000); // Timer still updates every second
         };
     </script>
 </head>
