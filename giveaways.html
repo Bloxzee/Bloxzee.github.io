@@ -254,14 +254,18 @@
 
                 if (currentTimestamp >= endDate) {
                     // Giveaway has ended, show "Giveaway Ended" and the final joined count
-                    joined = Math.max(0, (currentTimestamp - startDate) * update);
-                    giveaway.joined = joined; // Set the joined count
+                    if (giveaway.joined === 0) {
+                        joined = Math.max(0, (endDate - startDate) * update);
+                        giveaway.joined = joined;
+                    }
                     giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(joined)} Joined`, true);
                     giveawayCards.querySelector('.timer').innerText = "Giveaway Ended";
                 } else {
                     // Giveaway is ongoing, calculate joined count once based on start time
-                    joined = Math.max(0, (currentTimestamp - startDate) * update);
-                    giveaway.joined = joined; // Set the joined count
+                    if (giveaway.joined === 0) {
+                        joined = Math.max(0, (currentTimestamp - startDate) * update);
+                        giveaway.joined = joined;
+                    }
                     giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(joined)} Joined`, false);
                 }
             });
@@ -270,6 +274,7 @@
         function createGiveawayCard(amount, startDate, endDate, joinedCountText, isEnded) {
             const joinBtnDisabled = isEnded ? 'disabled' : '';
             const joinBtnText = isEnded ? 'Join' : 'Join Now';
+
             const card = `
                 <div class="giveaway-card">
                     <div class="timer">${isEnded ? 'Giveaway Ended' : formatTime(endDate - Math.floor(Date.now() / 1000))}</div>
