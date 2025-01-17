@@ -233,14 +233,16 @@
                 "end-date": 1737425356,
                 "amount": 100000,
                 "update": 3,
-                "joined": 0
+                "joined": 0,
+                "joined-users": []
             },
             {
                 "start-date": 1737148156,
                 "end-date": 1737148356,
                 "amount": 500000,
                 "update": 4,
-                "joined": 0
+                "joined": 0,
+                "joined-users": []
             }
         ];
 
@@ -250,19 +252,15 @@
             giveawayCards.innerHTML = '';
 
             giveaways.forEach(giveaway => {
-                let { "start-date": startDate, "end-date": endDate, amount, update, joined } = giveaway;
+                let { "start-date": startDate, "end-date": endDate, amount, update, joined, "joined-users": joinedUsers } = giveaway;
 
                 if (currentTimestamp >= endDate) {
-                    // Giveaway has ended, show "Giveaway Ended" and the final joined count
-                    if (giveaway.joined === 0) {
-                        joined = Math.max(0, (endDate - startDate) * update);
-                        giveaway.joined = joined;
-                    }
+                    // Giveaway has ended
                     giveawayCards.innerHTML += createGiveawayCard(amount, startDate, endDate, `${abbreviateNumber(joined)} Joined`, true);
                     giveawayCards.querySelector('.timer').innerText = "Giveaway Ended";
                 } else {
-                    // Giveaway is ongoing, calculate joined count once based on start time
-                    if (giveaway.joined === 0) {
+                    // Giveaway is ongoing
+                    if (joined === 0) {
                         joined = Math.max(0, (currentTimestamp - startDate) * update);
                         giveaway.joined = joined;
                     }
@@ -285,10 +283,18 @@
                     <div class="joined-count">
                         <span class="count">${joinedCountText}</span>
                     </div>
-                    <button class="join-btn" ${joinBtnDisabled}>${joinBtnText}</button>
+                    <button class="join-btn" ${joinBtnDisabled} onclick="joinGiveaway(event)">${joinBtnText}</button>
                 </div>
             `;
             return card;
+        }
+
+        function joinGiveaway(event) {
+            const button = event.target;
+            if (!button.disabled) {
+                button.innerText = 'Joined!';
+                button.disabled = true;
+            }
         }
 
         function formatTime(seconds) {
@@ -309,12 +315,10 @@
     </script>
 </head>
 <body>
-    <!-- Top Navigation -->
     <div class="top-nav">
-        <!-- Content will be dynamically inserted by JavaScript -->
+        <!-- Dynamically filled by JavaScript -->
     </div>
 
-    <!-- Left Navigation -->
     <div class="left-nav">
         <div class="logo">BLOX<span>ZEE</span></div>
         <a href="/">Games</a>
@@ -324,13 +328,11 @@
         <a href="/about">About</a>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <h1>Giveaways</h1>
         <div class="giveaway-cards"></div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         © 2025 Bloxzee All Rights Reserved.
     </div>
