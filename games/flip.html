@@ -236,7 +236,7 @@
             const flipOutcome = Math.random() < 0.5 ? 'Win' : 'Lose'; // Random win or lose
 
             if (flipOutcome === 'Win') {
-                setMoney(getMoney() + betAmount * 3); // Double bet if won (3x CHANGED FOR EVENT)
+                setMoney(getMoney() + betAmount * 2); // Double bet if won (2x)
                 resultMessage.textContent = "You Won!";
                 resultMessage.style.color = "#00ff88";
             } else {
