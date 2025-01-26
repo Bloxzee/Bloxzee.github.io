@@ -254,7 +254,7 @@
             const correctNumber = Math.floor(Math.random() * 3) + 1; // Random number between 1 and 3
 
             if (selectedNumber === correctNumber) {
-                setMoney(getMoney() + betAmount * 4); // Double the bet if correct (3x CHANGED FOR EVENT)
+                setMoney(getMoney() + betAmount * 3); // Triple the bet if correct (3x)
                 resultMessage.textContent = "You Won!";
                 resultMessage.style.color = "#00ff88";
             } else {
