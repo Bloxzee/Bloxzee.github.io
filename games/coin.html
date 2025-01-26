@@ -255,7 +255,7 @@
 
             const resultMessage = document.querySelector('.result-message');
             if (win === chosenSide) {
-                setMoney(getMoney() + betAmount * 3); // Double the bet if win (3x CHANGED FOR EVENT)
+                setMoney(getMoney() + betAmount * 2); // Double the bet if win (2x)
                 resultMessage.textContent = "You won!";
                 resultMessage.style.color = "#00ff88";
             } else {
