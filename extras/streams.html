@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Art with Title and Stream Counter</title>
+    <style>
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('CircularSpotifyText-Book.otf') format('opentype');
+        }
+
+        body {
+            margin: 0;
+            font-family: 'CustomFont', sans-serif; /* Apply the custom font */
+            background-color: #f4f4f4;
+        }
+
+        .cover-container {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .cover-art {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            font-size: 36px; /* Larger font size for title */
+            font-weight: bold;
+        }
+
+        .stream-info {
+            display: flex;
+            flex-direction: column;
+            margin-top: 57px; /* Space between title and stream info */
+            align-items: flex-start; /* Align items to the left */
+        }
+
+        .stream-count {
+            font-size: 20px; /* Smaller font size for stream count */
+            font-weight: bold;
+        }
+
+        .all-time-streams {
+            font-size: 12px;
+            color: grey;
+            margin-bottom: 5px; /* Space between grey text and stream count */
+        }
+
+        .buttons-container {
+            margin-top: 10px;
+        }
+
+        .button {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .input-container {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .toggle-options {
+            margin-top: 10px;
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <img src="cover.png" alt="Cover Art" class="cover-art">
+        <div class="content">
+            <div class="title">E4E (Drill Rap Anthem)</div>
+            <div class="stream-info">
+                <div class="all-time-streams">ALL-TIME STREAMS</div>
+                <div class="stream-count" id="streamCount">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="buttons-container">
+        <button class="button" id="toggleButton">Start</button>
+    </div>
+    <div class="input-container">
+        <label for="minIncrease">Minimum Increase:</label>
+        <input type="number" id="minIncrease" value="10">
+    </div>
+    <div class="input-container">
+        <label for="maxIncrease">Maximum Increase:</label>
+        <input type="number" id="maxIncrease" value="20">
+    </div>
+    <div class="toggle-options" id="toggleOptions" onclick="toggleOptions()">Show Options</div>
+
+    <script>
+        var counterValue = 0; // Start with the initial value for the stream counter
+        var timerId;
+
+        function toggleCounter() {
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+                document.getElementById("toggleButton").textContent = "Resume";
+            } else {
+                var minIncrease = parseInt(document.getElementById("minIncrease").value);
+                var maxIncrease = parseInt(document.getElementById("maxIncrease").value);
+                timerId = setInterval(function() {
+                    incrementCounter(minIncrease, maxIncrease);
+                }, 25);
+                document.getElementById("toggleButton").textContent = "Pause";
+            }
+        }
+
+        function incrementCounter(minIncrease, maxIncrease) {
+            var randomAmount = Math.floor(Math.random() * (maxIncrease - minIncrease + 1)) + minIncrease;
+            counterValue += randomAmount;
+            document.getElementById("streamCount").textContent = formatNumber(counterValue);
+        }
+
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function toggleOptions() {
+            var options = document.getElementsByClassName("input-container");
+            var displayValue = options[0].style.display === "none" ? "block" : "none";
+            for (var i = 0; i < options.length; i++) {
+                options[i].style.display = displayValue;
+            }
+            var toggleText = document.getElementById("toggleOptions");
+            toggleText.textContent = displayValue === "none" ? "Show Options" : "Hide Options";
+        }
+
+        document.getElementById("toggleButton").addEventListener("click", toggleCounter);
+    </script>
+</body>
+</html>
